@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import UserPage from "./pages/UserPage";
@@ -9,16 +9,15 @@ function App() {
   const [page, setPage] = useState("register");
   const [user, setUser] = useState(null);
 
-  const handleLogout = () => {
+  const handleLogout = (userData) => {
     localStorage.removeItem("token");
     setUser(null);
-    setPage("login");
+    setPage("register");
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-
     try {
       const payload = jwtDecode(token);
 
@@ -27,19 +26,42 @@ function App() {
         localStorage.removeItem("token");
         return;
       }
-
       setUser({
         userID: payload.userID,
         username: payload.username,
         role: payload.role,
       });
-    } catch {
+    } catch (error) {
+      console.error("Error decoding token:", error);
       localStorage.removeItem("token");
     }
   }, []);
 
+  const styles = {
+    topRight: {
+      position: "absolute",
+      top: "20px",
+      right: "20px",
+    },
+  };
+
   return (
     <div>
+      {/* Top right buttons */}
+      {!user && (
+        <div style={styles.topRight}>
+          <button
+            style={{ marginRight: "10px" }}
+            onClick={() => setPage("register")}
+          >
+            Register
+          </button>
+
+          <button onClick={() => setPage("login")}>Login</button>
+        </div>
+      )}
+
+      {/* Main content */}
       {user ? (
         user.role === "admin" ? (
           <AdminPage user={user} onLogout={handleLogout} />
@@ -47,19 +69,7 @@ function App() {
           <UserPage user={user} onLogout={handleLogout} />
         )
       ) : (
-        <>
-          {page === "register" ? <Register /> : <Login setUser={setUser} />}
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <button
-              style={{ marginRight: "20px" }}
-              onClick={() => setPage("register")}
-            >
-              Register
-            </button>
-
-            <button onClick={() => setPage("login")}> Login</button>
-          </div>
-        </>
+        <>{page === "register" ? <Register /> : <Login setUser={setUser} />}</>
       )}
     </div>
   );
