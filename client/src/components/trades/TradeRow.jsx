@@ -1,0 +1,105 @@
+export default function TradeRow({
+  trade,
+  isEditing,
+  editFormData,
+  onEditClick,
+  onDeleteTrade,
+  onEditChange,
+  onUpdateTrade,
+  onCancelEdit,
+}) {
+  if (isEditing) {
+    return (
+      <tr>
+        <td>
+          <input
+            type="text"
+            name="symbol"
+            value={editFormData.symbol}
+            onChange={onEditChange}
+          />
+        </td>
+        <td>
+          <input
+            type="text"
+            name="direction"
+            value={editFormData.direction}
+            onChange={onEditChange}
+          />
+        </td>
+        <td>
+          <input
+            type="number"
+            step="0.00001"
+            name="openPrice"
+            value={editFormData.openPrice}
+            onChange={onEditChange}
+          />
+        </td>
+        <td>
+          <input
+            type="number"
+            step="0.00001"
+            name="closePrice"
+            value={editFormData.closePrice}
+            onChange={onEditChange}
+          />
+        </td>
+        <td>
+          <input
+            type="number"
+            step="0.01"
+            name="volume"
+            value={editFormData.volume}
+            onChange={onEditChange}
+          />
+        </td>
+        <td>
+          <input
+            type="number"
+            step="0.01"
+            name="profitLoss"
+            value={editFormData.profitLoss}
+            onChange={onEditChange}
+          />
+        </td>
+        <td>
+          <input
+            type="text"
+            name="strategy"
+            value={editFormData.strategy}
+            onChange={onEditChange}
+          />
+        </td>
+        <td>
+          <input
+            type="text"
+            name="notes"
+            value={editFormData.notes}
+            onChange={onEditChange}
+          />
+        </td>
+        <td>
+          <button onClick={() => onUpdateTrade(trade._id)}>Save</button>
+          <button onClick={onCancelEdit}>Cancel</button>
+        </td>
+      </tr>
+    );
+  }
+  return (
+    <tr>
+      <td>{trade.symbol}</td>
+      <td>{trade.direction}</td>
+      <td>{trade.openPrice}</td>
+      <td>{trade.closePrice}</td>
+      <td>{trade.volume}</td>
+      <td>{trade.profitLoss}</td>
+      <td>{trade.strategy}</td>
+      <td>{trade.notes}</td>
+      <td>
+        <button onClick={() => onEditClick(trade)}>Edit</button>
+        <button onClick={() => onDeleteTrade(trade._id)}>Delete</button>
+      </td>
+    </tr>
+  );
+}

@@ -15,7 +15,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/trades", tradeRoutes);
 
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
