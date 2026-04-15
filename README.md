@@ -17,12 +17,14 @@ The application consists of two main parts:
 
 ## 🧩 Project Structure
 
+```
 FOREX-TRADE-TRACKER/
 │
 ├── client/ # React frontend
 ├── server/ # Node.js backend
 │
 └── README.md
+```
 
 ---
 

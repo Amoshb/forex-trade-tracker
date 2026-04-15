@@ -35,7 +35,7 @@ This README covers only the **server-side** of the application.
 ---
 
 ## 📁 Project Structure
-
+```
 server/
 │
 ├── Controller/
@@ -62,7 +62,7 @@ server/
 ├── package.json
 ├── package-lock.json
 └── server.js
-
+```
 ---
 
 ## 🔐 Authentication

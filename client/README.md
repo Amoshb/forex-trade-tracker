@@ -30,7 +30,7 @@ This README covers only the **client-side (React)** implementation.
 ---
 
 ## 📁 Project Structure
-
+```
 src/
 │
 ├── components/
@@ -69,7 +69,7 @@ src/
 │
 ├── App.js
 └── index.js
-
+```
 ---
 
 ## 🔐 Authentication Flow
