@@ -1,0 +1,96 @@
+.trades-section {
+  margin-top: 20px;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+.info-message {
+  text-align: center;
+  font-size: 0.95rem;
+  margin-top: 12px;
+}
+
+.trade-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.trade-table {
+  width: 100%;
+  min-width: 1000px;
+  border-collapse: collapse;
+  background-color: transparent;
+}
+
+.trade-table th,
+.trade-table td {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 12px 14px;
+  text-align: center;
+  vertical-align: middle;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.trade-table th {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.trade-table td {
+  font-size: 0.92rem;
+}
+
+.trade-action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.trade-table input {
+  width: 100%;
+  min-width: 90px;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+}
+
+/* Default row hover */
+.trade-table tbody tr:not(.trade-profit):not(.trade-loss):hover td {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Profit row */
+.trade-profit td {
+  background-color: rgba(76, 175, 80, 0.08);
+}
+
+.trade-table tbody tr.trade-profit:hover td {
+  background-color: rgba(76, 175, 80, 0.15);
+}
+
+/* Loss row */
+.trade-loss td {
+  background-color: rgba(244, 67, 54, 0.08);
+}
+
+.trade-table tbody tr.trade-loss:hover td {
+  background-color: rgba(244, 67, 54, 0.15);
+}
+
+/* Profit/Loss value colors */
+.pl-profit {
+  color: #7cfc98;
+  font-weight: 600;
+}
+
+.pl-loss {
+  color: #ff8a80;
+  font-weight: 600;
+}

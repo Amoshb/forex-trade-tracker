@@ -37,39 +37,18 @@ function App() {
     }
   }, []);
 
-  const styles = {
-    topRight: {
-      position: "absolute",
-      top: "20px",
-      right: "20px",
-    },
-  };
-
   return (
-    <div>
-      {/* Top right buttons */}
-      {!user && (
-        <div style={styles.topRight}>
-          <button
-            style={{ marginRight: "10px" }}
-            onClick={() => setPage("register")}
-          >
-            Register
-          </button>
-
-          <button onClick={() => setPage("login")}>Login</button>
-        </div>
-      )}
-
-      {/* Main content */}
+    <div className="app">
       {user ? (
         user.role === "admin" ? (
           <AdminPage user={user} onLogout={handleLogout} />
         ) : (
           <UserPage user={user} onLogout={handleLogout} />
         )
+      ) : page === "register" ? (
+        <Register setPage={setPage} />
       ) : (
-        <>{page === "register" ? <Register /> : <Login setUser={setUser} />}</>
+        <Login setUser={setUser} setPage={setPage} />
       )}
     </div>
   );

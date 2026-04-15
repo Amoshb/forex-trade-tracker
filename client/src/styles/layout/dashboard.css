@@ -1,0 +1,33 @@
+.dashboard-page {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.dashboard-topbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 30px;
+}
+
+.dashboard-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.dashboard-title {
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+.dashboard-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.dashboard-section {
+  margin-top: 20px;
+}

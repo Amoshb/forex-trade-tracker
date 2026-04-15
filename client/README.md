@@ -1,70 +1,132 @@
-# Getting Started with Create React App
+# Forex Trade Tracker (Client)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React-based frontend application for tracking forex trades, managing trade history, and analysing trading performance.
 
-## Available Scripts
+This project is part of a full-stack Forex Trade Tracker system.  
+This README covers only the **client-side (React)** implementation.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- User Registration
+- User Login (JWT-based authentication)
+- Create new trades
+- View all trades in a table
+- Edit existing trades
+- Delete trades
+- Profit/Loss visual highlighting (green/red)
+- Clean dashboard-style UI
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🛠️ Tech Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Frontend:** React (JavaScript)
+- **Styling:** Custom CSS (modular structure)
+- **State Management:** React Hooks (`useState`, `useEffect`)
+- **Authentication:** JWT (handled via backend)
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📁 Project Structure
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+src/
+│
+├── components/
+│ └── trades/
+│ ├── ShowAllTrades.jsx
+│ ├── TradeTable.jsx
+│ ├── TradeRow.jsx
+│ └── CreateTrade.jsx
+│
+├── pages/
+│ ├── Register.jsx
+│ ├── Login.jsx
+│ ├── UserPage.jsx
+│ └── AdminPage.jsx
+│
+├── styles/
+│ ├── base/
+│ │ ├── reset.css
+│ │ ├── typography.css
+│ │ └── variables.css
+│ │
+│ ├── components/
+│ │ ├── auth.css
+│ │ ├── button.css
+│ │ ├── card.css
+│ │ ├── form.css
+│ │ ├── table.css
+│ │ └── trade.css
+│ │
+│ ├── layout/
+│ │ ├── app.css
+│ │ ├── dashboard.css
+│ │ └── page.css
+│ │
+│ └── main.css
+│
+├── App.js
+└── index.js
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🔐 Authentication Flow
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- User logs in → receives JWT from backend
+- Token is stored in `localStorage`
+- Token is decoded using `jwt-decode`
+- User session persists until token expires or logout
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 📊 Trade Features
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Users can:
 
-## Learn More
+- Add new trades with:
+  - Symbol
+  - Direction (buy/sell)
+  - Entry & Exit price
+  - Volume
+  - Profit/Loss
+  - Strategy
+  - Notes
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- Edit trades inline
+- Delete trades
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Visual Indicators
 
-### Code Splitting
+- 🟢 Profit trades
+- 🔴 Loss trades
+- ⚪ Breakeven trades
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## 🎨 UI Design Approach
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Modular CSS structure (base, components, layout)
+- Reusable components (table, form, card)
+- Dashboard-style layout
+- Minimal and clean design
+- Focus on usability and clarity
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 📌 Notes
 
-### Advanced Configuration
+This is the **client-side only**.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Backend handles:
 
-### Deployment
+- Authentication
+- Trade storage
+- API endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+## 👤 Author
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Amosh

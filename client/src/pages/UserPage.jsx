@@ -6,29 +6,25 @@ export default function UserPage({ user, onLogout }) {
   const [activeSection, setActiveSection] = useState("");
 
   return (
-    <div style={{ textAlign: "right", padding: "20px" }}>
-      <button onClick={onLogout}>Logout</button>
-      <div style={{ textAlign: "center" }}>
-        <h1>Welcome to user Homepage - {user.username}</h1>
+    <div className="dashboard-page">
+      <div className="dashboard-topbar">
+        <button onClick={onLogout}>Logout</button>
+      </div>
 
-        <br />
-        <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
+      <div className="dashboard-content">
+        <h1 className="dashboard-title">Welcome {user.username}!</h1>
+
+        <div className="dashboard-actions">
           <button onClick={() => setActiveSection("home")}>Home Page</button>
-        </div>
-
-        <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
           <button onClick={() => setActiveSection("trades")}>
             Show My Trades
           </button>
-        </div>
-
-        <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
           <button onClick={() => setActiveSection("create")}>
             Create New Trade
           </button>
         </div>
 
-        <div style={{ marginTop: "20px" }}>
+        <div className="dashboard-section">
           {activeSection === "trades" && <ShowAllTrades />}
           {activeSection === "create" && <CreateTrade />}
         </div>

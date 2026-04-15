@@ -11,43 +11,37 @@ export default function TradeTable({
   onCancelEdit,
 }) {
   return (
-    <table
-      border="1"
-      cellPadding="10"
-      style={{
-        marginTop: "20px",
-        width: "100%",
-        borderCollapse: "collapse",
-      }}
-    >
-      <thead>
-        <tr>
-          <th>Symbol</th>
-          <th>Direction</th>
-          <th>Entry Price</th>
-          <th>Exit Price</th>
-          <th>Volume</th>
-          <th>Profit/Loss</th>
-          <th>Strategy</th>
-          <th>Notes</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {trades.map((trade) => (
-          <TradeRow
-            key={trade._id}
-            trade={trade}
-            isEditing={editingTradeId === trade._id}
-            editFormData={editFormData}
-            onEditClick={onEditClick}
-            onDeleteTrade={onDeleteTrade}
-            onEditChange={onEditChange}
-            onUpdateTrade={onUpdateTrade}
-            onCancelEdit={onCancelEdit}
-          />
-        ))}
-      </tbody>
-    </table>
+    <div className="trade-table-wrapper">
+      <table className="trade-table">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Direction</th>
+            <th>Entry Price</th>
+            <th>Exit Price</th>
+            <th>Volume</th>
+            <th>Profit/Loss</th>
+            <th>Strategy</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {trades.map((trade) => (
+            <TradeRow
+              key={trade._id}
+              trade={trade}
+              isEditing={editingTradeId === trade._id}
+              editFormData={editFormData}
+              onEditClick={onEditClick}
+              onDeleteTrade={onDeleteTrade}
+              onEditChange={onEditChange}
+              onUpdateTrade={onUpdateTrade}
+              onCancelEdit={onCancelEdit}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

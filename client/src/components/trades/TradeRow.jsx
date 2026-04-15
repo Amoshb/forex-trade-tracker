@@ -8,6 +8,12 @@ export default function TradeRow({
   onUpdateTrade,
   onCancelEdit,
 }) {
+  const profit = Number(trade.profitLoss);
+
+  let rowClass = "";
+  if (profit > 0) rowClass = "trade-profit";
+  else if (profit < 0) rowClass = "trade-loss";
+
   if (isEditing) {
     return (
       <tr>
@@ -80,25 +86,33 @@ export default function TradeRow({
           />
         </td>
         <td>
-          <button onClick={() => onUpdateTrade(trade._id)}>Save</button>
-          <button onClick={onCancelEdit}>Cancel</button>
+          <div className="trade-action-buttons">
+            <button onClick={() => onUpdateTrade(trade._id)}>Save</button>
+            <button onClick={onCancelEdit}>Cancel</button>
+          </div>
         </td>
       </tr>
     );
   }
+
   return (
-    <tr>
+    <tr className={rowClass}>
       <td>{trade.symbol}</td>
       <td>{trade.direction}</td>
       <td>{trade.openPrice}</td>
       <td>{trade.closePrice}</td>
       <td>{trade.volume}</td>
-      <td>{trade.profitLoss}</td>
+      <td className={profit > 0 ? "pl-profit" : profit < 0 ? "pl-loss" : ""}>
+        {trade.profitLoss}
+      </td>
       <td>{trade.strategy}</td>
       <td>{trade.notes}</td>
+
       <td>
-        <button onClick={() => onEditClick(trade)}>Edit</button>
-        <button onClick={() => onDeleteTrade(trade._id)}>Delete</button>
+        <div className="trade-action-buttons">
+          <button onClick={() => onEditClick(trade)}>Edit</button>
+          <button onClick={() => onDeleteTrade(trade._id)}>Delete</button>
+        </div>
       </td>
     </tr>
   );

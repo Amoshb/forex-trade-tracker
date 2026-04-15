@@ -1,0 +1,18 @@
+.auth-link {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.auth-link span {
+  color: var(--primary-color);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.auth-link span:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}

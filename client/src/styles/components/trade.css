@@ -1,0 +1,14 @@
+.trade-form-card {
+  max-width: 650px;
+}
+
+.trade-form {
+  display: grid;
+  gap: 16px;
+}
+
+.trade-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}

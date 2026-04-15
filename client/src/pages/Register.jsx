@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function Register() {
+export default function Register({ setPage }) {
   const [userName, setUserName] = useState("");
   const [userPass, setUserPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
@@ -43,41 +43,53 @@ export default function Register() {
     }
   };
   return (
-    <div style={{ textAlign: "center" }}>
-      <h2> Register</h2>
-      <label>Username: </label>
-      <input
-        type="text"
-        placeholder="username"
-        value={userName}
-        onChange={(e) => setUserName(e.target.value)}
-      />
-      <br />
-      <br />
-      <label>Password: </label>
-      <input
-        type="password"
-        placeholder="password"
-        value={userPass}
-        onChange={(e) => setUserPass(e.target.value)}
-      />
+    <div className="page-wrapper">
+      <div className="form-card">
+        <h2 className="form-title">Register</h2>
 
-      <br />
-      <br />
-      <label>Confirm Password: </label>
-      <input
-        type="password"
-        placeholder="confirm password"
-        value={confirmPass}
-        onChange={(e) => setConfirmPass(e.target.value)}
-      />
+        <div className="form-group">
+          <label className="form-label">Username</label>
+          <input
+            type="text"
+            placeholder="username"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+          />
+        </div>
 
-      <br />
-      <br />
-      <button onClick={handleSubmit}>Submit</button>
-      {message && <p>{message}</p>}
-      <br />
-      <br />
+        <div className="form-group">
+          <label className="form-label">Password</label>
+          <input
+            type="password"
+            placeholder="password"
+            value={userPass}
+            onChange={(e) => setUserPass(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Confirm Password</label>
+          <input
+            type="password"
+            placeholder="confirm password"
+            value={confirmPass}
+            onChange={(e) => setConfirmPass(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <button onClick={handleSubmit} className="full-width-btn">
+            Submit
+          </button>
+        </div>
+
+        {message && <p className="form-message">{message}</p>}
+
+        <p className="auth-link">
+          Already have an account?{" "}
+          <span onClick={() => setPage("login")}>Login</span>
+        </p>
+      </div>
     </div>
   );
 }

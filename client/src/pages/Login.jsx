@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
-export default function Login({ setUser }) {
+export default function Login({ setUser, setPage }) {
   const [userName, setUserName] = useState("");
   const [userPass, setUserPass] = useState("");
   const [message, setMessage] = useState("");
@@ -40,30 +40,42 @@ export default function Login({ setUser }) {
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <h2>Login</h2>
-      <label>Username: </label>
-      <input
-        type="text"
-        placeholder="username"
-        value={userName}
-        onChange={(e) => setUserName(e.target.value)}
-      />
-      <br />
-      <br />
-      <label>Password: </label>
-      <input
-        type="password"
-        placeholder="password"
-        value={userPass}
-        onChange={(e) => setUserPass(e.target.value)}
-      />
-      <br />
-      <br />
-      <button onClick={handleData}>Send</button>
-      {message && <p>{message}</p>}
-      <br />
-      <br />
+    <div className="page-wrapper">
+      <div className="form-card">
+        <h2 className="form-title">Login</h2>
+
+        <div className="form-group">
+          <label className="form-label"> Username</label>
+          <input
+            type="text"
+            placeholder="username"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+          ></input>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label"> Password</label>
+          <input
+            type="password"
+            placeholder="********"
+            value={userPass}
+            onChange={(e) => setUserPass(e.target.value)}
+          ></input>
+        </div>
+
+        <div className="form-group">
+          <button onClick={handleData} className="full-width-btn">
+            send
+          </button>
+          {message && <p className="form-message"> {message}</p>}
+
+          <p className="auth-link">
+            Don’t have an account?{" "}
+            <span onClick={() => setPage("register")}>Register</span>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

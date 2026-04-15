@@ -148,12 +148,14 @@ export default function ShowAllTrades() {
   };
 
   return (
-    <div>
-      <h2>My Trades</h2>
+    <div className="trades-section">
+      <h2 className="section-title">My Trades</h2>
 
-      {loading && <p>Loading trades...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {!loading && trades.length === 0 && <p>No trades found</p>}
+      {loading && <p className="info-message">Loading trades...</p>}
+      {error && <p className="form-message error-message">{error}</p>}
+      {!loading && trades.length === 0 && (
+        <p className="info-message">No trades found</p>
+      )}
 
       {trades.length > 0 && (
         <TradeTable
