@@ -6,11 +6,14 @@ const {
   getTrades,
   deleteTrade,
   updateTrade,
+  getPaginatedTrade,
 } = require("../Controller/trade-controller");
 
 router.post("/create", authMiddleware, createTrade);
 router.get("/all_trades", authMiddleware, getTrades);
 router.delete("/delete/:id", authMiddleware, deleteTrade);
 router.put("/update/:id", authMiddleware, updateTrade);
+
+router.get("/all_trade_paginated", authMiddleware, getPaginatedTrade);
 
 module.exports = router;

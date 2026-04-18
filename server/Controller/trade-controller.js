@@ -119,9 +119,49 @@ const updateTrade = async (req, res) => {
   }
 };
 
+const getPaginatedTrade = async (req, res) => {
+  try {
+    const userId = req.userInfo.userID;
+
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit) || 10, 1);
+
+    const skip = (page - 1) * limit;
+
+    const totalTrades = await Trade.countDocuments({ userId });
+
+    const trades = await Trade.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalTrades / limit);
+
+    res.status(200).json({
+      success: true,
+      trades,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalTrades,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: e.message,
+    });
+  }
+};
+
 module.exports = {
   createTrade,
   getTrades,
   deleteTrade,
   updateTrade,
+  getPaginatedTrade,
 };

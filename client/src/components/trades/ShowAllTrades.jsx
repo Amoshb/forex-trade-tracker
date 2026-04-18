@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import TradeTable from "./TradeTable";
 
 export default function ShowAllTrades() {
   const [trades, setTrades] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   const [editingTradeId, setEditingTradeId] = useState(null);
   const [editFormData, setEditFormData] = useState({
     symbol: "",
@@ -17,18 +18,27 @@ export default function ShowAllTrades() {
     notes: "",
   });
 
-  useEffect(() => {
-    const fetchTrades = async () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalTrades, setTotalTrades] = useState(0);
+
+  // ✅ Memoized fetch function
+  const fetchPaginatedTrades = useCallback(
+    async (page = currentPage) => {
       try {
         setLoading(true);
         setError("");
 
-        const response = await fetch("/api/trades/all_trades", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        const response = await fetch(
+          `/api/trades/all_trade_paginated?page=${page}&limit=${limit}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           },
-        });
+        );
 
         const data = await response.json();
 
@@ -37,17 +47,38 @@ export default function ShowAllTrades() {
         }
 
         setTrades(data.trades);
+        setCurrentPage(data.pagination.currentPage);
+        setTotalPages(data.pagination.totalPages);
+        setTotalTrades(data.pagination.totalTrades);
       } catch (error) {
         console.error("Error fetching trades:", error);
         setError(error.message);
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [currentPage, limit],
+  );
 
-    fetchTrades();
-  }, []);
+  //  useEffect with proper dependency
+  useEffect(() => {
+    fetchPaginatedTrades(currentPage);
+  }, [fetchPaginatedTrades, currentPage]);
 
+  //  Pagination handlers
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  // Delete with re-fetch (important for pagination)
   const handleDeleteTrade = async (tradeId) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this trade?",
@@ -71,15 +102,18 @@ export default function ShowAllTrades() {
         throw new Error(data.message || "Failed to delete trade");
       }
 
-      setTrades((prevTrades) =>
-        prevTrades.filter((trade) => trade._id !== tradeId),
-      );
+      const isLastTradeOnPage = trades.length === 1;
+      const newPage =
+        isLastTradeOnPage && currentPage > 1 ? currentPage - 1 : currentPage;
+
+      await fetchPaginatedTrades(newPage);
     } catch (error) {
       console.error("Error deleting trade:", error);
       setError(error.message);
     }
   };
 
+  //  Edit handlers 
   const handleEditClick = (trade) => {
     setEditingTradeId(trade._id);
     setEditFormData({
@@ -151,6 +185,10 @@ export default function ShowAllTrades() {
     <div className="trades-section">
       <h2 className="section-title">My Trades</h2>
 
+      <p className="info-message">
+        Total Trades: {totalTrades} | Page {currentPage} of {totalPages}
+      </p>
+
       {loading && <p className="info-message">Loading trades...</p>}
       {error && <p className="form-message error-message">{error}</p>}
       {!loading && trades.length === 0 && (
@@ -169,6 +207,20 @@ export default function ShowAllTrades() {
           onCancelEdit={handleCancelEdit}
         />
       )}
+
+      <div className="pagination-controls">
+        <button onClick={handlePrevPage} disabled={currentPage === 1}>
+          Previous
+        </button>
+
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+
+        <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+          Next
+        </button>
+      </div>
     </div>
   );
 }
