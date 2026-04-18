@@ -94,3 +94,43 @@
   color: #ff8a80;
   font-weight: 600;
 }
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 25px;
+}
+
+/* Page text */
+.pagination-controls span {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Buttons */
+.pagination-controls button {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  border-radius: var(--border-radius);
+  border: none;
+  background-color: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover */
+.pagination-controls button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* Disabled state */
+.pagination-controls button:disabled {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: not-allowed;
+  transform: none;
+}

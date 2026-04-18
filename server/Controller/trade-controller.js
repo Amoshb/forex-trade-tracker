@@ -131,11 +131,11 @@ const getPaginatedTrade = async (req, res) => {
     const totalTrades = await Trade.countDocuments({ userId });
 
     const trades = await Trade.find({ userId })
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit);
 
-    const totalPages = Math.ceil(totalTrades / limit);
+    const totalPages = totalTrades === 0 ? 1 : Math.ceil(totalTrades / limit);
 
     res.status(200).json({
       success: true,

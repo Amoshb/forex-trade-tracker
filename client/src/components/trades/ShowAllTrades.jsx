@@ -113,7 +113,7 @@ export default function ShowAllTrades() {
     }
   };
 
-  //  Edit handlers 
+  //  Edit handlers
   const handleEditClick = (trade) => {
     setEditingTradeId(trade._id);
     setEditFormData({
@@ -209,7 +209,10 @@ export default function ShowAllTrades() {
       )}
 
       <div className="pagination-controls">
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1 || loading}
+        >
           Previous
         </button>
 
@@ -217,7 +220,10 @@ export default function ShowAllTrades() {
           Page {currentPage} of {totalPages}
         </span>
 
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages || loading}
+        >
           Next
         </button>
       </div>
