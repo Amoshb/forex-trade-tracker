@@ -1,5 +1,5 @@
 .env
 server/node_modules
 client/node_modules
-test_data
-importdummydata
+server/test_data
+server/importdummydata
