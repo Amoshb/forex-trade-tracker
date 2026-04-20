@@ -1,4 +1,4 @@
-const Trade = require("../Model/trade");
+const Trade = require("../../Model/trade");
 
 const createTrade = async (req, res) => {
   try {
