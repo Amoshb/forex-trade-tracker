@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import TradeTable from "./TradeTable";
 
 export default function ShowAllTrades() {
@@ -18,67 +19,62 @@ export default function ShowAllTrades() {
     notes: "",
   });
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(10);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const limit = 10;
+  const currentPage = Math.max(Number(searchParams.get("page")) || 1, 1);
+
   const [totalPages, setTotalPages] = useState(1);
   const [totalTrades, setTotalTrades] = useState(0);
 
-  // ✅ Memoized fetch function
-  const fetchPaginatedTrades = useCallback(
-    async (page = currentPage) => {
-      try {
-        setLoading(true);
-        setError("");
+  const fetchPaginatedTrades = useCallback(async (page) => {
+    try {
+      setLoading(true);
+      setError("");
 
-        const response = await fetch(
-          `/api/trades/all_trade_paginated?page=${page}&limit=${limit}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+      const response = await fetch(
+        `/api/trades/all_trade_paginated?page=${page}&limit=${limit}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        );
+        },
+      );
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!response.ok || !data.success) {
-          throw new Error(data.message || "Failed to fetch trades");
-        }
-
-        setTrades(data.trades);
-        setCurrentPage(data.pagination.currentPage);
-        setTotalPages(data.pagination.totalPages);
-        setTotalTrades(data.pagination.totalTrades);
-      } catch (error) {
-        console.error("Error fetching trades:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to fetch trades");
       }
-    },
-    [currentPage, limit],
-  );
 
-  //  useEffect with proper dependency
+      setTrades(data.trades);
+      setTotalPages(data.pagination.totalPages);
+      setTotalTrades(data.pagination.totalTrades);
+    } catch (error) {
+      console.error("Error fetching trades:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchPaginatedTrades(currentPage);
-  }, [fetchPaginatedTrades, currentPage]);
+  }, [currentPage, fetchPaginatedTrades]);
 
-  //  Pagination handlers
   const handleNextPage = () => {
     if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
+      setSearchParams({ page: String(currentPage + 1) });
     }
   };
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
+      setSearchParams({ page: String(currentPage - 1) });
     }
   };
 
-  // Delete with re-fetch (important for pagination)
   const handleDeleteTrade = async (tradeId) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this trade?",
@@ -106,14 +102,13 @@ export default function ShowAllTrades() {
       const newPage =
         isLastTradeOnPage && currentPage > 1 ? currentPage - 1 : currentPage;
 
-      await fetchPaginatedTrades(newPage);
+      setSearchParams({ page: String(newPage) });
     } catch (error) {
       console.error("Error deleting trade:", error);
       setError(error.message);
     }
   };
 
-  //  Edit handlers
   const handleEditClick = (trade) => {
     setEditingTradeId(trade._id);
     setEditFormData({

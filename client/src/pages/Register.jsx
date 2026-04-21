@@ -1,10 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Register({ setPage }) {
+export default function Register() {
   const [userName, setUserName] = useState("");
   const [userPass, setUserPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
   const [message, setMessage] = useState("");
+
+  const navigate = useNavigate();
+
   const isPasswordValid = () => userPass === confirmPass && userPass !== "";
 
   const handleSubmit = async () => {
@@ -14,6 +18,7 @@ export default function Register({ setPage }) {
       setConfirmPass("");
       return;
     }
+
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -24,24 +29,31 @@ export default function Register({ setPage }) {
       });
 
       const data = await res.json();
-      console.log("Server respone:", data);
+      console.log("Server response:", data);
+
       if (!res.ok) {
         setUserName("");
         setUserPass("");
         setConfirmPass("");
         setMessage(data?.message || "Registration failed");
         return;
-      } else {
-        setUserName("");
-        setUserPass("");
-        setConfirmPass("");
-        setMessage(data?.message || "Account created successfully!");
       }
+
+      setUserName("");
+      setUserPass("");
+      setConfirmPass("");
+      setMessage(data?.message || "Account created successfully!");
+
+      // optional: send user straight to login after short delay
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
     } catch (e) {
       console.log(e);
       setMessage("Network error");
     }
   };
+
   return (
     <div className="page-wrapper">
       <div className="form-card">
@@ -87,7 +99,7 @@ export default function Register({ setPage }) {
 
         <p className="auth-link">
           Already have an account?{" "}
-          <span onClick={() => setPage("login")}>Login</span>
+          <span onClick={() => navigate("/login")}>Login</span>
         </p>
       </div>
     </div>

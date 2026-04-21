@@ -6,10 +6,11 @@
 @import "./layout/app.css";
 @import "./layout/dashboard.css";
 
-
 @import "./components/card.css";
 @import "./components/form.css";
 @import "./components/button.css";
 @import "./components/trade.css";
 @import "./components/table.css";
 @import "./components/auth.css";
+
+@import "./components/userpage/user-homepage.css";
