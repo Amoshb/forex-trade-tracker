@@ -1,4 +1,5 @@
-const Trade = require("../../Model/trade");
+const Trade = require("../../model/trade");
+const mongoose = require("mongoose");
 
 const createTrade = async (req, res) => {
   try {
@@ -128,9 +129,19 @@ const getPaginatedTrade = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const totalTrades = await Trade.countDocuments({ userId });
+    const { symbol, direction, strategy } = req.query;
 
-    const trades = await Trade.find({ userId })
+    const filter = {
+      userId: new mongoose.Types.ObjectId(userId),
+    };
+
+    if (symbol) filter.symbol = symbol;
+    if (direction) filter.direction = direction;
+    if (strategy) filter.strategy = strategy;
+
+    const totalTrades = await Trade.countDocuments(filter);
+
+    const trades = await Trade.find(filter)
       .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit);
@@ -158,10 +169,39 @@ const getPaginatedTrade = async (req, res) => {
   }
 };
 
+const getTradeFilterOptions = async (req, res) => {
+  try {
+    const userId = req.userInfo.userID;
+
+    const matchStage = {
+      userId: new mongoose.Types.ObjectId(userId),
+    };
+
+    const [symbols, directions, strategies] = await Promise.all([
+      Trade.distinct("symbol", matchStage),
+      Trade.distinct("direction", matchStage),
+      Trade.distinct("strategy", matchStage),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      symbols: symbols.sort(),
+      directions: directions.sort(),
+      strategies: strategies.sort(),
+    });
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      error: e.message,
+    });
+  }
+};
+
 module.exports = {
   createTrade,
   getTrades,
   deleteTrade,
   updateTrade,
   getPaginatedTrade,
+  getTradeFilterOptions,
 };

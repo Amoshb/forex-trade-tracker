@@ -12,3 +12,48 @@
   display: flex;
   justify-content: center;
 }
+
+.trade-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr)) auto;
+  gap: 12px;
+  align-items: center;
+  margin: 20px 0 16px;
+}
+
+.trade-filters select {
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  background-color: #f1f1f1;
+  color: #222;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.trade-filters select:focus {
+  outline: 2px solid var(--primary-color);
+}
+
+.trade-filters button {
+  padding: 12px 18px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .trade-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .trade-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .trade-filters button {
+    width: 100%;
+  }
+}

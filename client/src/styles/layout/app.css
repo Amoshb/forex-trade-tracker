@@ -16,3 +16,11 @@
   padding: 10px 16px;
   font-size: 0.95rem;
 }
+
+.side-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  
+}

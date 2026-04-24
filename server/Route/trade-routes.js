@@ -7,6 +7,7 @@ const {
   deleteTrade,
   updateTrade,
   getPaginatedTrade,
+  getTradeFilterOptions,
 } = require("../Controller/Trade/trade-crud");
 
 const {
@@ -20,6 +21,7 @@ router.delete("/delete/:id", authMiddleware, deleteTrade);
 router.put("/update/:id", authMiddleware, updateTrade);
 
 router.get("/all_trade_paginated", authMiddleware, getPaginatedTrade);
+router.get("/filter-options", authMiddleware, getTradeFilterOptions);
 
 router.get("/total_win_and_loss", authMiddleware, totalWinandLoss);
 router.get("/trade_stats", authMiddleware, tradeStats);

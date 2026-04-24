@@ -5,6 +5,7 @@
 @import "./layout/page.css";
 @import "./layout/app.css";
 @import "./layout/dashboard.css";
+@import "./layout/sidebar.css";
 
 @import "./components/card.css";
 @import "./components/form.css";

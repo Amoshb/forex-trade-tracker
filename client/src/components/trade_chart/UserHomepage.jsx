@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import TradeOverviewPieChart from "./TradeOverviewPieChart";
 import StrategySymbolChart from "./StrategySymbolChart";
 import StrategyDirectionChart from "./StrategyDirectionChart";
+import StrategyWinLossChart from "./StrategyWinLossChart";
 import StrategyWinRateChart from "./StrategyWinRateChart";
 import StrategyEfficiencyChart from "./StrategyEffiencyChart";
 import StrategyUsageChart from "./StrategyUsuageChart";
@@ -91,6 +92,7 @@ export default function UserHomepage({ username }) {
             <StrategySymbolChart />
             <StrategyDirectionChart />
             <StrategyWinRateChart />
+            <StrategyWinLossChart />
             <StrategyEfficiencyChart />
             <StrategyUsageChart />
           </div>
