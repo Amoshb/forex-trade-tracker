@@ -176,6 +176,10 @@ export default function ShowAllTrades() {
         throw new Error(data.error || data.message || "Failed to delete trade");
       }
 
+      // instant UI update
+      setTrades((prev) => prev.filter((t) => t._id !== tradeId));
+      setTotalTrades((prev) => prev - 1);
+
       const isLastTradeOnPage = trades.length === 1;
       const newPage =
         isLastTradeOnPage && currentPage > 1 ? currentPage - 1 : currentPage;

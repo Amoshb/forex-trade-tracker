@@ -15,3 +15,5 @@
 @import "./components/auth.css";
 
 @import "./components/userpage/user-homepage.css";
+
+@import "./components/admin/admincss.css";

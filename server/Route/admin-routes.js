@@ -5,6 +5,7 @@ const {
   getUsers,
   getOneUser,
   deleteUserAndTrade,
+  updateUserRole
 } = require("../Controller/admin/user-info");
 const {
   userStats,
@@ -15,19 +16,23 @@ const router = express.Router();
 
 router.get("/users", authMiddleware, isAdminUser, getUsers);
 router.get("/users/:id", authMiddleware, isAdminUser, getOneUser);
+
+
 router.delete(
-  "/deleteuser/:id",
+  "/delete-user/:id",
   authMiddleware,
   isAdminUser,
   deleteUserAndTrade,
 );
 
-router.get("/users_stats", authMiddleware, isAdminUser, userStats);
+router.get("/user-stats", authMiddleware, isAdminUser, userStats);
 router.get(
-  "/users_trade_stats",
+  "/users-with-trade-count",
   authMiddleware,
   isAdminUser,
   getUsersWithTradeCount,
 );
 
+
+router.put("/update-user-role/:id", authMiddleware, isAdminUser, updateUserRole);
 module.exports = router;

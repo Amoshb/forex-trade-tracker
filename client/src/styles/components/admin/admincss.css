@@ -1,0 +1,36 @@
+.admin-stat-value {
+  color: #111827;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.admin-stats-card {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 40px;
+  padding: 20px;
+}
+
+.admin-stat-item {
+  text-align: center;
+}
+
+.admin-stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 10px;
+}
+.admin-activity-card {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .admin-stats-card {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

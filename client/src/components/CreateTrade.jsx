@@ -80,14 +80,17 @@ export default function CreateTrade() {
           </div>
 
           <div className="form-group form-row">
-            <label className="form-label">Direction: </label>
-            <input
-              type="text"
+            <label className="form-label">Direction:</label>
+
+            <select
               name="direction"
-              placeholder="Direction"
               value={formData.direction}
               onChange={handleChange}
-            />
+            >
+              <option value="">Select Direction</option>
+              <option value="buy">Buy</option>
+              <option value="sell">Sell</option>
+            </select>
           </div>
 
           <div className="form-group form-row">
