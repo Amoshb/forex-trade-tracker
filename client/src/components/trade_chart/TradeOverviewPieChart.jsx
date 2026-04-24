@@ -31,12 +31,22 @@ export default function TradeOverviewPieChart({ analysis }) {
 
         <div className="user-homepage-chart-card__stat">
           <p>Win Rate</p>
-          <h3>{analysis?.profitPercentage || 0}%</h3>
+          <h3>
+            {analysis?.profitPercentage
+              ? analysis.profitPercentage.toFixed(2)
+              : "0.00"}
+            %
+          </h3>
         </div>
 
         <div className="user-homepage-chart-card__stat">
           <p>Loss Rate</p>
-          <h3>{analysis?.lossPercentage || 0}%</h3>
+          <h3>
+            {analysis?.lossPercentage
+              ? analysis.lossPercentage.toFixed(2)
+              : "0.00"}
+            %
+          </h3>
         </div>
       </div>
 
