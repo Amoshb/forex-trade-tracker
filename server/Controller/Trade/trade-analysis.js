@@ -1,4 +1,4 @@
-const Trade = require("../../model/trade");
+const Trade = require("../../Model/trade");
 const mongoose = require("mongoose");
 
 const totalWinandLoss = async (req, res) => {

@@ -1,6 +1,6 @@
-const User = require("../../model/user");
+const User = require("../../Model/user");
 const mongoose = require("mongoose");
-const Trade = require("../../model/trade");
+const Trade = require("../../Model/trade");
 
 const getUsers = async (req, res) => {
   try {

@@ -1,5 +1,5 @@
-const User = require("../../model/user");
-const Trade = require("../../model/trade");
+const User = require("../../Model/user");
+const Trade = require("../../Model/trade");
 const mongoose = require("mongoose");
 
 const userStats = async (req, res) => {
