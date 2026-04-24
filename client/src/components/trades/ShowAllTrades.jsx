@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import TradeTable from "./TradeTable";
+import API_BASE_URL from "../../api";
 
 export default function ShowAllTrades() {
   const [trades, setTrades] = useState([]);
@@ -41,7 +42,7 @@ export default function ShowAllTrades() {
 
   const fetchFilterOptions = useCallback(async () => {
     try {
-      const response = await fetch("/api/trades/filter-options", {
+      const response = await fetch(`${API_BASE_URL}/api/trades/filter-options`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -82,7 +83,7 @@ export default function ShowAllTrades() {
         if (filters.direction) query.append("direction", filters.direction);
         if (filters.strategy) query.append("strategy", filters.strategy);
 
-        const url = `/api/trades/all_trade_paginated?${query.toString()}`;
+        const url = `${API_BASE_URL}/api/trades/all_trade_paginated?${query.toString()}`;
         console.log("fetch trades url:", url);
 
         const response = await fetch(url, {
@@ -162,7 +163,7 @@ export default function ShowAllTrades() {
     try {
       setError("");
 
-      const response = await fetch(`/api/trades/delete/${tradeId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/trades/delete/${tradeId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -232,7 +233,7 @@ export default function ShowAllTrades() {
     try {
       setError("");
 
-      const response = await fetch(`/api/trades/update/${tradeId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/trades/update/${tradeId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

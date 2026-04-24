@@ -9,6 +9,7 @@ import {
   Tooltip,
   Cell,
 } from "recharts";
+import API_BASE_URL from "../../api";
 
 export default function StrategySymbolChart() {
   const [rawData, setRawData] = useState([]);
@@ -22,7 +23,7 @@ export default function StrategySymbolChart() {
       setError("");
 
       const response = await fetch(
-        "/api/trades/trade_stats?groupBy=strategy,symbol",
+        `${API_BASE_URL}/api/trades/trade_stats?groupBy=strategy,symbol`,
         {
           headers: {
             "Content-Type": "application/json",

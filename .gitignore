@@ -3,3 +3,5 @@ server/node_modules
 client/node_modules
 server/test_data
 server/importdummydata
+client/.env
+client/.gitignore

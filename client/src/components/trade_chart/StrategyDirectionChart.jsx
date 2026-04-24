@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import API_BASE_URL from "../../api";
 
 export default function StrategyDirectionChart() {
   const [chartData, setChartData] = useState([]);
@@ -21,7 +22,7 @@ export default function StrategyDirectionChart() {
       setError("");
 
       const response = await fetch(
-        "/api/trades/trade_stats?groupBy=strategy,direction",
+        `${API_BASE_URL}/api/trades/trade_stats?groupBy=strategy,direction`,
         {
           headers: {
             "Content-Type": "application/json",

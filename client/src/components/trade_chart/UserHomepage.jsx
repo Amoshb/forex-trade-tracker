@@ -8,6 +8,7 @@ import StrategyWinRateChart from "./StrategyWinRateChart";
 import StrategyEfficiencyChart from "./StrategyEffiencyChart";
 import StrategyUsageChart from "./StrategyUsuageChart";
 import InsightPanel from "./InsightPanel";
+import API_BASE_URL from "../../api";
 
 export default function UserHomepage({ username }) {
   const [totalTradesAnalysis, setTotalTradesAnalysis] = useState(null);
@@ -21,7 +22,7 @@ export default function UserHomepage({ username }) {
       setLoading(true);
       setError("");
 
-      const response = await fetch("/api/trades/total_win_and_loss", {
+      const response = await fetch(`${API_BASE_URL}/api/trades/total_win_and_loss`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

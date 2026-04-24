@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../api";
 
 export default function Login({ setUser }) {
   const [userName, setUserName] = useState("");
   const [userPass, setUserPass] = useState("");
   const [message, setMessage] = useState("");
 
-  const navigate = useNavigate(); // ✅ new
+  const navigate = useNavigate(); 
 
   const handleData = async () => {
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

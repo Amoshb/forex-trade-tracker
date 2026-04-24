@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import AdminUserActivityChart from "./AdminUserActivityChart";
+import API_BASE_URL from "../../api";
 
 export default function AdminHomePage({ username }) {
   const [stats, setStats] = useState({
@@ -16,7 +17,7 @@ export default function AdminHomePage({ username }) {
       setLoading(true);
       setError("");
 
-      const response = await fetch("/api/admin/user-stats", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/user-stats`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -46,7 +47,7 @@ export default function AdminHomePage({ username }) {
 
   const fetchUsersWithTradeCount = async () => {
     try {
-      const response = await fetch("/api/admin/users-with-trade-count", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/users-with-trade-count`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

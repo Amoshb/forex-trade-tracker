@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import API_BASE_URL from "../../api";
 
 export default function EditUsers() {
   const [users, setUsers] = useState([]);
@@ -10,7 +11,7 @@ export default function EditUsers() {
       setError("");
       setMessage("");
 
-      const response = await fetch("/api/admin/users-with-trade-count", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/users-with-trade-count`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -45,7 +46,7 @@ export default function EditUsers() {
       setError("");
       setMessage("");
 
-      const response = await fetch(`/api/admin/delete-user/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/delete-user/${userId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -72,7 +73,7 @@ export default function EditUsers() {
       setError("");
       setMessage("");
 
-      const response = await fetch(`/api/admin/update-user-role/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/update-user-role/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

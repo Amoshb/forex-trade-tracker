@@ -9,13 +9,14 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import API_BASE_URL from "../../api";
 
 export default function StrategyWinLossChart() {
   const [chartData, setChartData] = useState([]);
 
   const fetchData = async () => {
     try {
-      const res = await fetch("/api/trades/trade_stats?groupBy=strategy", {
+      const res = await fetch(`${API_BASE_URL}/api/trades/trade_stats?groupBy=strategy`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

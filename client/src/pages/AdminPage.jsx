@@ -8,6 +8,7 @@ import {
 import AdminHomePage from "../components/admin/AdminHomePage";
 import EditUsers from "../components/admin/EditUsers";
 
+
 export default function AdminPage({ user, onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();

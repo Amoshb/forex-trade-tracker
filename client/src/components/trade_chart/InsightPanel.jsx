@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import API_BASE_URL from "../../api";
 
 export default function InsightPanel() {
   const [strategyData, setStrategyData] = useState([]);
@@ -10,7 +11,7 @@ export default function InsightPanel() {
       setLoading(true);
       setError("");
 
-      const response = await fetch("/api/trades/trade_stats?groupBy=strategy", {
+      const response = await fetch(`${API_BASE_URL}/api/trades/trade_stats?groupBy=strategy`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
