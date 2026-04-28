@@ -2,16 +2,21 @@ import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../api";
+import LoadingButton from "../components/LoadingButton";
 
 export default function Login({ setUser }) {
   const [userName, setUserName] = useState("");
   const [userPass, setUserPass] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleData = async () => {
     try {
+      setLoading(true);
+      setMessage("");
+
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
@@ -43,11 +48,12 @@ export default function Login({ setUser }) {
         role: payload.role,
       });
 
-      // ✅ optional (App.js will handle redirect anyway)
       navigate("/");
     } catch (e) {
       console.log(e);
       setMessage("Network error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,34 +63,46 @@ export default function Login({ setUser }) {
         <h2 className="form-title">Login</h2>
 
         <div className="form-group">
-          <label className="form-label"> Username</label>
+          <label className="form-label">Username</label>
           <input
             type="text"
             placeholder="username"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
+            disabled={loading}
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label"> Password</label>
+          <label className="form-label">Password</label>
           <input
             type="password"
             placeholder="********"
             value={userPass}
             onChange={(e) => setUserPass(e.target.value)}
+            disabled={loading}
           />
         </div>
 
         <div className="form-group">
-          <button onClick={handleData} className="full-width-btn">
-            send
-          </button>
+          <LoadingButton
+            loading={loading}
+            text="Login"
+            loadingText="Logging in..."
+            className="full-width-btn"
+            onClick={handleData}
+          />
 
           {message && <p className="form-message">{message}</p>}
+          {loading && (
+            <p className="form-message">
+              ⏳ Logging in... The server may be waking up (this can take up to
+              50 seconds).
+            </p>
+          )}
 
           <p className="auth-link">
-            Don’t have an account? {/* ✅ FIXED */}
+            Don’t have an account?{" "}
             <span onClick={() => navigate("/register")}>Register</span>
           </p>
         </div>
