@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import TradeTable from "./TradeTable";
-import API_BASE_URL from "../../api";
+import { authApi } from "../../api";
 
 export default function ShowAllTrades() {
   const [trades, setTrades] = useState([]);
@@ -42,21 +42,10 @@ export default function ShowAllTrades() {
 
   const fetchFilterOptions = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/trades/filter-options`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await authApi.get(`/api/trades/filter-options`);
 
-      const data = await response.json();
+      const data = response.data;
       console.log("filter options response:", data);
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.error || data.message || "Failed to fetch filter options",
-        );
-      }
 
       setFilterOptions({
         symbols: data.symbols || [],
@@ -64,7 +53,10 @@ export default function ShowAllTrades() {
         strategies: data.strategies || [],
       });
     } catch (error) {
-      console.error("Error fetching filter options:", error);
+      console.error(
+        "Error fetching filter options:",
+        error.response?.data?.message || error.message,
+      );
     }
   }, []);
 
@@ -83,31 +75,20 @@ export default function ShowAllTrades() {
         if (filters.direction) query.append("direction", filters.direction);
         if (filters.strategy) query.append("strategy", filters.strategy);
 
-        const url = `${API_BASE_URL}/api/trades/all_trade_paginated?${query.toString()}`;
+        const url = `/api/trades/all_trade_paginated?${query.toString()}`;
         console.log("fetch trades url:", url);
 
-        const response = await fetch(url, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await authApi.get(url);
 
-        const data = await response.json();
+        const data = response.data;
         console.log("paginated trades response:", data);
-
-        if (!response.ok || !data.success) {
-          throw new Error(
-            data.error || data.message || "Failed to fetch trades",
-          );
-        }
 
         setTrades(data.trades || []);
         setTotalPages(data.pagination?.totalPages || 1);
         setTotalTrades(data.pagination?.totalTrades || 0);
       } catch (error) {
         console.error("Error fetching trades:", error);
-        setError(error.message);
+        setError(error.response?.data?.message || error.message);
       } finally {
         setLoading(false);
       }
@@ -163,19 +144,7 @@ export default function ShowAllTrades() {
     try {
       setError("");
 
-      const response = await fetch(`${API_BASE_URL}/api/trades/delete/${tradeId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || data.message || "Failed to delete trade");
-      }
+      await authApi.delete(`/api/trades/delete/${tradeId}`);
 
       // instant UI update
       setTrades((prev) => prev.filter((t) => t._id !== tradeId));
@@ -188,7 +157,7 @@ export default function ShowAllTrades() {
       setSearchParams({ page: String(newPage) });
     } catch (error) {
       console.error("Error deleting trade:", error);
-      setError(error.message);
+      setError(error.response?.data?.message || error.message);
     }
   };
 
@@ -233,20 +202,12 @@ export default function ShowAllTrades() {
     try {
       setError("");
 
-      const response = await fetch(`${API_BASE_URL}/api/trades/update/${tradeId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(editFormData),
-      });
+      const response = await authApi.put(
+        `/api/trades/update/${tradeId}`,
+        editFormData,
+      );
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || data.message || "Failed to update trade");
-      }
+      const data = response.data;
 
       setTrades((prevTrades) =>
         prevTrades.map((trade) => (trade._id === tradeId ? data.trade : trade)),
@@ -255,7 +216,7 @@ export default function ShowAllTrades() {
       setEditingTradeId(null);
     } catch (error) {
       console.error("Error updating trade:", error);
-      setError(error.message);
+      setError(error.response?.data?.message || error.message);
     }
   };
 

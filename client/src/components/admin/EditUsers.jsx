@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API_BASE_URL from "../../api";
+import { authApi } from "../../api";
 
 export default function EditUsers() {
   const [users, setUsers] = useState([]);
@@ -11,23 +11,14 @@ export default function EditUsers() {
       setError("");
       setMessage("");
 
-      const response = await fetch(`${API_BASE_URL}/api/admin/users-with-trade-count`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await authApi.get(`/api/admin/users-with-trade-count`);
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || data.message || "Failed to fetch users");
-      }
+      const data = response.data;
 
       setUsers(data.users || []);
     } catch (error) {
       console.error("Error fetching users:", error);
-      setError(error.message);
+      setError(error.response?.data?.message || error.message);
     }
   };
 
@@ -46,22 +37,11 @@ export default function EditUsers() {
       setError("");
       setMessage("");
 
-      const response = await fetch(`${API_BASE_URL}/api/admin/delete-user/${userId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || data.message || "Failed to delete user");
-      }
+      const response = await authApi.delete(`/api/admin/delete-user/${userId}`);
+      const data = response.data;
 
       setMessage(data.message || "User deleted successfully");
-      fetchUsers();
+      setUsers((prev) => prev.filter((t) => t._id !== userId));
     } catch (error) {
       console.error("Error deleting user:", error);
       setError(error.message);
@@ -73,26 +53,18 @@ export default function EditUsers() {
       setError("");
       setMessage("");
 
-      const response = await fetch(`${API_BASE_URL}/api/admin/update-user-role/${userId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ role: newRole }),
-      });
+      const response = await authApi.put(
+        `/api/admin/update-user-role/${userId}`,
+        { role: newRole },
+      );
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || data.message || "Failed to update role");
-      }
+      const data = response.data;
 
       setMessage(data.message || "User role updated successfully");
       fetchUsers();
     } catch (error) {
       console.error("Error updating role:", error);
-      setError(error.message);
+      setError(error.response?.data?.message || error.message);
     }
   };
 

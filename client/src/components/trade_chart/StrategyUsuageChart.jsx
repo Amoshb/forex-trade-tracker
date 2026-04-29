@@ -8,26 +8,29 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
-import API_BASE_URL from "../../api";
+import { authApi } from "../../api";
 
 export default function StrategyUsageChart() {
   const [chartData, setChartData] = useState([]);
 
   const fetchData = async () => {
-    const res = await fetch(`${API_BASE_URL}/api/trades/trade_stats?groupBy=strategy`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    try {
+      const res = await authApi.get(`/api/trades/trade_stats?groupBy=strategy`);
 
-    const data = await res.json();
+      const data = res.data;
 
-    const formatted = (data.data || []).map((item) => ({
-      strategy: item.strategy,
-      trades: item.trade_count,
-    }));
+      const formatted = (data.data || []).map((item) => ({
+        strategy: item.strategy,
+        trades: item.trade_count,
+      }));
 
-    setChartData(formatted);
+      setChartData(formatted);
+    } catch (error) {
+      console.error(
+        "Error fetching strategy efficiency:",
+        error.response?.data?.message || error.message,
+      );
+    }
   };
 
   useEffect(() => {

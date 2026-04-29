@@ -8,7 +8,7 @@ import StrategyWinRateChart from "./StrategyWinRateChart";
 import StrategyEfficiencyChart from "./StrategyEffiencyChart";
 import StrategyUsageChart from "./StrategyUsuageChart";
 import InsightPanel from "./InsightPanel";
-import API_BASE_URL from "../../api";
+import { authApi } from "../../api";
 
 export default function UserHomepage({ username }) {
   const [totalTradesAnalysis, setTotalTradesAnalysis] = useState(null);
@@ -22,28 +22,18 @@ export default function UserHomepage({ username }) {
       setLoading(true);
       setError("");
 
-      const response = await fetch(`${API_BASE_URL}/api/trades/total_win_and_loss`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await authApi.get(`/api/trades/total_win_and_loss`)
 
-      const data = await response.json();
+      const data = response.data;
 
       console.log("response status:", response.status);
       console.log("response data:", data);
 
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.error || data.message || "Failed to fetch trade analysis",
-        );
-      }
 
       setTotalTradesAnalysis(data);
     } catch (error) {
       console.error("Error fetching trade analysis:", error);
-      setError(error.message);
+      setError(error.response?.data?.message||error.message);
     } finally {
       setLoading(false);
     }

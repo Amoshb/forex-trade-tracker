@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AdminUserActivityChart from "./AdminUserActivityChart";
-import API_BASE_URL from "../../api";
+import { authApi } from "../../api";
 
 export default function AdminHomePage({ username }) {
   const [stats, setStats] = useState({
@@ -17,21 +17,10 @@ export default function AdminHomePage({ username }) {
       setLoading(true);
       setError("");
 
-      const response = await fetch(`${API_BASE_URL}/api/admin/user-stats`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await authApi.get(`/api/admin/user-stats`);
 
-      const data = await response.json();
+      const data = response.data;
       console.log(data);
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.error || data.message || "Failed to fetch admin stats",
-        );
-      }
 
       setStats({
         total_users: data.total_users || 0,
@@ -39,7 +28,7 @@ export default function AdminHomePage({ username }) {
       });
     } catch (error) {
       console.error("Error fetching admin stats:", error);
-      setError(error.message);
+      setError(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }
@@ -47,23 +36,14 @@ export default function AdminHomePage({ username }) {
 
   const fetchUsersWithTradeCount = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/users-with-trade-count`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await authApi.get(`/api/admin/users-with-trade-count`);
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || data.message || "Failed to fetch users");
-      }
+      const data = response.data;
 
       setUsers(data.users || []);
     } catch (error) {
       console.error("Error fetching users:", error);
-      setError(error.message);
+      setError(error.response?.data?.message || error.message);
     }
   };
 

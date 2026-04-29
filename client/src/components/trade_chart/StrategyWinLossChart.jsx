@@ -9,24 +9,16 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import API_BASE_URL from "../../api";
+import { authApi } from "../../api";
 
 export default function StrategyWinLossChart() {
   const [chartData, setChartData] = useState([]);
 
   const fetchData = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/trades/trade_stats?groupBy=strategy`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const res = await authApi.get(`/api/trades/trade_stats?groupBy=strategy`);
 
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error("Failed to fetch");
-      }
+      const data = res.data;
 
       const formatted = (data.data || []).map((item) => ({
         strategy: item.strategy,
@@ -36,8 +28,11 @@ export default function StrategyWinLossChart() {
       }));
 
       setChartData(formatted);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(
+        "Error fetching strategy efficiency:",
+        error.response?.data?.message || error.message,
+      );
     }
   };
 

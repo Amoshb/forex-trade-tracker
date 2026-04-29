@@ -9,34 +9,40 @@ import {
   Tooltip,
   Cell,
 } from "recharts";
-import API_BASE_URL from "../../api";
+import { authApi } from "../../api";
 
 export default function StrategyEfficiencyChart() {
-  const [chartData, setChartData] = useState([]);
+    const [chartData, setChartData] = useState([]);
 
-  const fetchData = async () => {
-    const res = await fetch(`${API_BASE_URL}/api/trades/trade_stats?groupBy=strategy`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const fetchData = async () => {
+      try {
+        const res = await authApi.get(
+          `/api/trades/trade_stats?groupBy=strategy`,
+        );
 
-    const data = await res.json();
+        const data = res.data;
 
-    const formatted = (data.data || [])
-      .map((item) => {
-        const avgPnL =
-          item.trade_count > 0 ? item.totalPnL / item.trade_count : 0;
+        const formatted = (data.data || [])
+          .map((item) => {
+            const avgPnL =
+              item.trade_count > 0 ? item.totalPnL / item.trade_count : 0;
 
-        return {
-          strategy: item.strategy,
-          avgPnL: Number(avgPnL.toFixed(2)),
-        };
-      })
-      .sort((a, b) => b.avgPnL - a.avgPnL);
+            return {
+              strategy: item.strategy,
+              avgPnL: Number(avgPnL.toFixed(2)),
+            };
+          })
+          .sort((a, b) => b.avgPnL - a.avgPnL);
 
-    setChartData(formatted);
-  };
+        setChartData(formatted);
+      } catch (error) {
+        console.error(
+          "Error fetching strategy efficiency:",
+          error.response?.data?.message || error.message,
+        );
+      }
+    };
+  
 
   useEffect(() => {
     fetchData();

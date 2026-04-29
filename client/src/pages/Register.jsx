@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import API_BASE_URL from "../api";
+
 import LoadingButton from "../components/LoadingButton";
+import { publicApi } from "../api";
 
 export default function Register() {
   const [userName, setUserName] = useState("");
@@ -38,27 +39,13 @@ export default function Register() {
       setLoading(true);
       setMessage("");
 
-      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: userName,
-          password: userPass,
-        }),
+      const res = await publicApi.post("/api/auth/register", {
+        username: userName,
+        password: userPass,
       });
 
-      const data = await res.json();
+      const data = res.data;
       console.log("Server response:", data);
-
-      if (!res.ok) {
-        setUserName("");
-        setUserPass("");
-        setConfirmPass("");
-        setMessage(data?.message || "Registration failed");
-        return;
-      }
 
       setUserName("");
       setUserPass("");
@@ -70,7 +57,10 @@ export default function Register() {
       }, 1000);
     } catch (e) {
       console.log(e);
-      setMessage("Network error");
+      setUserName("");
+      setUserPass("");
+      setConfirmPass("");
+      setMessage(e.response?.data?.message || "Network error");
     } finally {
       setLoading(false);
     }

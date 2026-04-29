@@ -1,5 +1,5 @@
 import { useState } from "react";
-import API_BASE_URL from "../api";
+import { authApi } from "../api";
 
 export default function CreateTrade() {
   const [formData, setFormData] = useState({
@@ -30,20 +30,10 @@ export default function CreateTrade() {
       setMessage("");
       setError("");
 
-      const response = await fetch(`${API_BASE_URL}/api/trades/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await authApi.post("/api/trades/create", formData);
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Failed to create trade");
-      }
+      const data = response.data;
+      console.log("data: ", data);
 
       setMessage("Trade created successfully");
 
@@ -59,7 +49,7 @@ export default function CreateTrade() {
       });
     } catch (error) {
       console.error("Error creating trade:", error);
-      setError(error.message);
+      setError(error.response.data.message || error.message);
     }
   };
 

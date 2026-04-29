@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import API_BASE_URL from "../api";
 import LoadingButton from "../components/LoadingButton";
+import { publicApi } from "../api";
 
 export default function Login({ setUser }) {
   const [userName, setUserName] = useState("");
@@ -17,24 +17,13 @@ export default function Login({ setUser }) {
       setLoading(true);
       setMessage("");
 
-      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: userName,
-          password: userPass,
-        }),
+      const res = await publicApi.post("/api/auth/login", {
+        username: userName,
+        password: userPass,
       });
 
-      const data = await res.json();
+      const data = res.data;
       console.log("Server response:", data);
-
-      if (!res.ok) {
-        setMessage(data?.message || "Login failed");
-        return;
-      }
 
       setMessage(data?.message || "Login successfully!");
 
@@ -51,7 +40,7 @@ export default function Login({ setUser }) {
       navigate("/");
     } catch (e) {
       console.log(e);
-      setMessage("Network error");
+      setMessage(e.response?.data?.message || "Network error");
     } finally {
       setLoading(false);
     }

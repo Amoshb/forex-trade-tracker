@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import API_BASE_URL from "../../api";
+import { authApi } from "../../api";
 
 export default function InsightPanel() {
   const [strategyData, setStrategyData] = useState([]);
@@ -11,25 +11,16 @@ export default function InsightPanel() {
       setLoading(true);
       setError("");
 
-      const response = await fetch(`${API_BASE_URL}/api/trades/trade_stats?groupBy=strategy`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await authApi.get(
+        `/api/trades/trade_stats?groupBy=strategy`,
+      );
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.error || data.message || "Failed to fetch insights",
-        );
-      }
+      const data = response.data;
 
       setStrategyData(data.data || []);
     } catch (error) {
       console.error("Error fetching strategy insights:", error);
-      setError(error.message);
+      setError(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }

@@ -9,33 +9,38 @@ import {
   Tooltip,
   Cell,
 } from "recharts";
-import API_BASE_URL from "../../api";
+import { authApi } from "../../api";
 
 export default function StrategyWinRateChart() {
   const [chartData, setChartData] = useState([]);
 
   const fetchData = async () => {
-    const res = await fetch(`${API_BASE_URL}/api/trades/trade_stats?groupBy=strategy`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    try {
+      const res = await authApi.get(`/api/trades/trade_stats?groupBy=strategy`);
 
-    const data = await res.json();
+      const data = res.data;
 
-    const formatted = (data.data || [])
-      .map((item) => {
-        const winRate =
-          item.trade_count > 0 ? (item.win_count / item.trade_count) * 100 : 0;
+      const formatted = (data.data || [])
+        .map((item) => {
+          const winRate =
+            item.trade_count > 0
+              ? (item.win_count / item.trade_count) * 100
+              : 0;
 
-        return {
-          strategy: item.strategy,
-          winRate: Number(winRate.toFixed(1)),
-        };
-      })
-      .sort((a, b) => b.winRate - a.winRate);
+          return {
+            strategy: item.strategy,
+            winRate: Number(winRate.toFixed(1)),
+          };
+        })
+        .sort((a, b) => b.winRate - a.winRate);
 
-    setChartData(formatted);
+      setChartData(formatted);
+    } catch (error) {
+      console.error(
+        "Error fetching strategy efficiency:",
+        error.response?.data?.message || error.message,
+      );
+    }
   };
 
   useEffect(() => {

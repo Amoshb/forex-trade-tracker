@@ -9,7 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import API_BASE_URL from "../../api";
+import { authApi } from "../../api";
 
 export default function StrategyDirectionChart() {
   const [chartData, setChartData] = useState([]);
@@ -21,23 +21,11 @@ export default function StrategyDirectionChart() {
       setLoading(true);
       setError("");
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/trades/trade_stats?groupBy=strategy,direction`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
+      const response = await authApi.get(
+        `/api/trades/trade_stats?groupBy=strategy,direction`,
       );
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.error || "Failed to fetch strategy-direction stats",
-        );
-      }
+      const data = response.data;
 
       const grouped = {};
 
@@ -73,7 +61,7 @@ export default function StrategyDirectionChart() {
       setChartData(formattedData);
     } catch (error) {
       console.error("Error fetching strategy-direction stats:", error);
-      setError(error.message);
+      setError(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }
