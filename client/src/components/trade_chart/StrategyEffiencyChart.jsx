@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -10,43 +10,33 @@ import {
   Cell,
 } from "recharts";
 import { authApi } from "../../api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function StrategyEfficiencyChart() {
-    const [chartData, setChartData] = useState([]);
+  const { data } = useQuery({
+    queryKey: ["groupBy_strategy"],
+    queryFn: async () => {
+      const res = await authApi.get(`/api/trades/trade_stats?groupBy=strategy`);
+      return res.data;
+    },
+  });
 
-    const fetchData = async () => {
-      try {
-        const res = await authApi.get(
-          `/api/trades/trade_stats?groupBy=strategy`,
-        );
+  const chartData = useMemo(() => {
+    // Wait for data to load before processing
+    if (!data?.data?.length) return [];
 
-        const data = res.data;
-
-        const formatted = (data.data || [])
-          .map((item) => {
-            const avgPnL =
-              item.trade_count > 0 ? item.totalPnL / item.trade_count : 0;
-
-            return {
-              strategy: item.strategy,
-              avgPnL: Number(avgPnL.toFixed(2)),
-            };
-          })
-          .sort((a, b) => b.avgPnL - a.avgPnL);
-
-        setChartData(formatted);
-      } catch (error) {
-        console.error(
-          "Error fetching strategy efficiency:",
-          error.response?.data?.message || error.message,
-        );
-      }
-    };
-  
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+    // Transform and sort raw API data into chart-friendly format
+    return data.data
+      .map((item) => {
+        const avgPnL =
+          item.trade_count > 0 ? item.totalPnL / item.trade_count : 0;
+        return {
+          strategy: item.strategy,
+          avgPnL: Number(avgPnL.toFixed(2)),
+        };
+      })
+      .sort((a, b) => b.avgPnL - a.avgPnL);
+  }, [data]);
 
   return (
     <div className="user-homepage-chart-card">

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -10,60 +10,42 @@ import {
   Cell,
 } from "recharts";
 import { authApi } from "../../api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function StrategySymbolChart() {
-  const [rawData, setRawData] = useState([]);
   const [selectedStrategy, setSelectedStrategy] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const fetchStrategySymbolStats = async () => {
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await authApi.get(
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["groupBy_strategy_symbol"],
+    queryFn: async () => {
+      const res = await authApi.get(
         `/api/trades/trade_stats?groupBy=strategy,symbol`,
       );
+      return res.data;
+    },
+  });
 
-      const data = response.data;
-
-      const formattedData = (data.data || []).map((item) => ({
-        strategy: item.strategy,
-        symbol: item.symbol,
-        totalPnL: item.totalPnL,
-        winCount: item.win_count,
-        lossCount: item.loss_count,
-        tradeCount: item.trade_count,
-      }));
-
-      setRawData(formattedData);
-
-      if (formattedData.length > 0) {
-        const uniqueStrategies = [
-          ...new Set(formattedData.map((item) => item.strategy)),
-        ];
-        setSelectedStrategy(uniqueStrategies[0]);
-      }
-    } catch (error) {
-      console.error("Error fetching strategy-symbol stats:", error);
-      setError(error.response?.data?.message || error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchStrategySymbolStats();
-  }, []);
+  const rawData = useMemo(() => {
+    if (!data?.data?.length) return [];
+    return data.data.map((item) => ({
+      strategy: item.strategy,
+      symbol: item.symbol,
+      totalPnL: item.totalPnL,
+      winCount: item.win_count,
+      lossCount: item.loss_count,
+      tradeCount: item.trade_count,
+    }));
+  }, [data]);
 
   const strategies = useMemo(() => {
     return [...new Set(rawData.map((item) => item.strategy))];
   }, [rawData]);
 
+  const activeStrategy = selectedStrategy || strategies[0] || "";
+
   const filteredChartData = useMemo(() => {
     return rawData
-      .filter((item) => item.strategy === selectedStrategy)
+      .filter((item) => item.strategy === activeStrategy)
       .sort((a, b) => b.totalPnL - a.totalPnL)
       .map((item) => ({
         name: item.symbol,
@@ -72,9 +54,9 @@ export default function StrategySymbolChart() {
         lossCount: item.lossCount,
         tradeCount: item.tradeCount,
       }));
-  }, [rawData, selectedStrategy]);
+  }, [rawData, activeStrategy]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="user-homepage-chart-card">
         <h2 className="user-homepage-chart-card__title">
@@ -87,14 +69,14 @@ export default function StrategySymbolChart() {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="user-homepage-chart-card">
         <h2 className="user-homepage-chart-card__title">
           Strategy Performance by Symbol
         </h2>
         <p className="user-homepage-chart-card__message user-homepage-chart-card__message--error">
-          {error}
+          {error?.message}
         </p>
       </div>
     );
@@ -109,7 +91,7 @@ export default function StrategySymbolChart() {
 
         <select
           className="user-homepage-chart-card__select"
-          value={selectedStrategy}
+          value={activeStrategy}
           onChange={(e) => setSelectedStrategy(e.target.value)}
         >
           {strategies.map((strategy) => (

@@ -1,39 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
+import {useMemo } from "react";
 import { authApi } from "../../api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function InsightPanel() {
-  const [strategyData, setStrategyData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["groupBy_strategy"],
+    queryFn: async () => {
+      const res = await authApi.get(`/api/trades/trade_stats?groupBy=strategy`);
+      return res.data;
+    },
+  });
 
-  const fetchStrategyStats = async () => {
-    try {
-      setLoading(true);
-      setError("");
 
-      const response = await authApi.get(
-        `/api/trades/trade_stats?groupBy=strategy`,
-      );
-
-      const data = response.data;
-
-      setStrategyData(data.data || []);
-    } catch (error) {
-      console.error("Error fetching strategy insights:", error);
-      setError(error.response?.data?.message || error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchStrategyStats();
-  }, []);
 
   const insights = useMemo(() => {
-    if (!strategyData.length) return null;
+    if (!data?.data?.length) return null;
 
-    const enriched = strategyData.map((item) => {
+    const enriched = data.data.map((item) => {
       const tradeCount = item.trade_count || 0;
       const winCount = item.win_count || 0;
       const totalPnL = item.totalPnL || 0;
@@ -72,9 +55,9 @@ export default function InsightPanel() {
       mostEfficient,
       mostUsed,
     };
-  }, [strategyData]);
+  }, [data]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="user-homepage-chart-card insight-panel">
         <h2 className="user-homepage-chart-card__title">Insights</h2>
@@ -83,12 +66,12 @@ export default function InsightPanel() {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="user-homepage-chart-card insight-panel">
         <h2 className="user-homepage-chart-card__title">Insights</h2>
         <p className="user-homepage-chart-card__message user-homepage-chart-card__message--error">
-          {error}
+          {error.message}
         </p>
       </div>
     );

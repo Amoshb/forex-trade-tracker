@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -10,66 +10,53 @@ import {
   Legend,
 } from "recharts";
 import { authApi } from "../../api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function StrategyDirectionChart() {
-  const [chartData, setChartData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const fetchStrategyDirectionStats = async () => {
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await authApi.get(
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["groupBy_strategy_direction"],
+    queryFn: async () => {
+      const res = await authApi.get(
         `/api/trades/trade_stats?groupBy=strategy,direction`,
       );
+      return res.data;
+    },
+  });
 
-      const data = response.data;
+  const chartData = useMemo(() => {
+    if (!data?.data?.length) return [];
 
-      const grouped = {};
+    const grouped = {};
 
-      (data.data || []).forEach((item) => {
-        const strategy = item.strategy || "Unknown";
-        const direction = (item.direction || "unknown").toLowerCase();
+    data.data.forEach((item) => {
+      const strategy = item.strategy || "Unknown";
+      const direction = (item.direction || "unknown").toLowerCase();
 
-        if (!grouped[strategy]) {
-          grouped[strategy] = {
-            strategy,
-            buy: 0,
-            sell: 0,
-            buyTrades: 0,
-            sellTrades: 0,
-          };
-        }
+      if (!grouped[strategy]) {
+        grouped[strategy] = {
+          strategy,
+          buy: 0,
+          sell: 0,
+          buyTrades: 0,
+          sellTrades: 0,
+        };
+      }
 
-        if (direction === "buy") {
-          grouped[strategy].buy = item.totalPnL || 0;
-          grouped[strategy].buyTrades = item.trade_count || 0;
-        }
+      if (direction === "buy") {
+        grouped[strategy].buy = item.totalPnL || 0;
+        grouped[strategy].buyTrades = item.trade_count || 0;
+      }
 
-        if (direction === "sell") {
-          grouped[strategy].sell = item.totalPnL || 0;
-          grouped[strategy].sellTrades = item.trade_count || 0;
-        }
-      });
+      if (direction === "sell") {
+        grouped[strategy].sell = item.totalPnL || 0;
+        grouped[strategy].sellTrades = item.trade_count || 0;
+      }
+    });
 
-      const formattedData = Object.values(grouped).sort(
-        (a, b) => b.buy + b.sell - (a.buy + a.sell),
-      );
-
-      setChartData(formattedData);
-    } catch (error) {
-      console.error("Error fetching strategy-direction stats:", error);
-      setError(error.response?.data?.message || error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchStrategyDirectionStats();
-  }, []);
+    return Object.values(grouped).sort(
+      (a, b) => b.buy + b.sell - (a.buy + a.sell),
+    );
+  }, [data]);
 
   const totals = useMemo(() => {
     return chartData.reduce(
@@ -82,7 +69,7 @@ export default function StrategyDirectionChart() {
     );
   }, [chartData]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="user-homepage-chart-card">
         <h2 className="user-homepage-chart-card__title">
@@ -95,14 +82,14 @@ export default function StrategyDirectionChart() {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="user-homepage-chart-card">
         <h2 className="user-homepage-chart-card__title">
           Strategy Buy vs Sell
         </h2>
         <p className="user-homepage-chart-card__message user-homepage-chart-card__message--error">
-          {error}
+          {error?.message}
         </p>
       </div>
     );

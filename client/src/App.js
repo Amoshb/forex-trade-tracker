@@ -5,6 +5,9 @@ import Login from "./pages/Login";
 import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
 import { jwtDecode } from "jwt-decode";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 function App() {
   const [user, setUser] = useState(null);
@@ -51,33 +54,35 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <div className="app">
-        <Routes>
-          {!user ? (
-            <>
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login setUser={setUser} />} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </>
-          ) : user.role === "admin" ? (
-            <>
-              <Route
-                path="/*"
-                element={<AdminPage user={user} onLogout={handleLogout} />}
-              />
-            </>
-          ) : (
-            <>
-              <Route
-                path="/*"
-                element={<UserPage user={user} onLogout={handleLogout} />}
-              />
-            </>
-          )}
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <div className="app">
+          <Routes>
+            {!user ? (
+              <>
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login setUser={setUser} />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
+              </>
+            ) : user.role === "admin" ? (
+              <>
+                <Route
+                  path="/*"
+                  element={<AdminPage user={user} onLogout={handleLogout} />}
+                />
+              </>
+            ) : (
+              <>
+                <Route
+                  path="/*"
+                  element={<UserPage user={user} onLogout={handleLogout} />}
+                />
+              </>
+            )}
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

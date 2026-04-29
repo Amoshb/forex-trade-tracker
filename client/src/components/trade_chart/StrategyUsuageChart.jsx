@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -9,33 +9,26 @@ import {
   Tooltip,
 } from "recharts";
 import { authApi } from "../../api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function StrategyUsageChart() {
-  const [chartData, setChartData] = useState([]);
-
-  const fetchData = async () => {
-    try {
+  
+  const { data } = useQuery({
+    queryKey: ["groupBy_strategy"],
+    queryFn: async () => {
       const res = await authApi.get(`/api/trades/trade_stats?groupBy=strategy`);
+      return res.data;
+    },
+  });
 
-      const data = res.data;
+  const chartData = useMemo(() => {
+    if (!data?.data?.length) return [];
 
-      const formatted = (data.data || []).map((item) => ({
-        strategy: item.strategy,
-        trades: item.trade_count,
-      }));
-
-      setChartData(formatted);
-    } catch (error) {
-      console.error(
-        "Error fetching strategy efficiency:",
-        error.response?.data?.message || error.message,
-      );
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+    return data.data.map((item) => ({
+      strategy: item.strategy,
+      trades: item.trade_count,
+    }));
+  }, [data]);
 
   return (
     <div className="user-homepage-chart-card">
