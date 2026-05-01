@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import AdminUserActivityChart from "./AdminUserActivityChart";
 import { authApi } from "../../api";
 import { useQuery } from "@tanstack/react-query";
