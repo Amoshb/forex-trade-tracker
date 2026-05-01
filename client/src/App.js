@@ -6,6 +6,7 @@ import UserPage from "./pages/UserPage";
 import AdminPage from "./pages/AdminPage";
 import { jwtDecode } from "jwt-decode";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ function App() {
           </Routes>
         </div>
       </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

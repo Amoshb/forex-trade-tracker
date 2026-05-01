@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { authApi } from "../api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function CreateTrade() {
   const [formData, setFormData] = useState({
@@ -13,8 +14,7 @@ export default function CreateTrade() {
     notes: "",
   });
 
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const queryClient = useQueryClient();
 
   const handleChange = (e) => {
     setFormData({
@@ -23,20 +23,13 @@ export default function CreateTrade() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      setMessage("");
-      setError("");
-
+  const createTrade = useMutation({
+    mutationFn: async () => {
       const response = await authApi.post("/api/trades/create", formData);
+      return response.data;
+    },
 
-      const data = response.data;
-      console.log("data: ", data);
-
-      setMessage("Trade created successfully");
-
+    onSuccess: () => {
       setFormData({
         symbol: "",
         direction: "",
@@ -47,18 +40,27 @@ export default function CreateTrade() {
         strategy: "",
         notes: "",
       });
-    } catch (error) {
-      console.error("Error creating trade:", error);
-      setError(error.response.data.message || error.message);
-    }
-  };
+      queryClient.invalidateQueries({ queryKey: ["total_win_and_loss"] });
+      queryClient.invalidateQueries({ queryKey: ["groupBy_strategy"] });
+      queryClient.invalidateQueries({
+        queryKey: ["groupBy_strategy_direction"],
+      });
+      queryClient.invalidateQueries({ queryKey: ["groupBy_strategy_symbol"] });
+    },
+  });
 
   return (
     <div className="trade-container">
       <div className="form-card trade-form-card">
         <h2 className="form-title">Add New Trade</h2>
 
-        <form onSubmit={handleSubmit} className="trade-form">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            createTrade.mutate();
+          }}
+          className="trade-form"
+        >
           <div className="form-group form-row">
             <label className="form-label">Symbol: </label>
             <input
@@ -154,14 +156,23 @@ export default function CreateTrade() {
           </div>
 
           <div className="form-group">
-            <button type="submit" className="full-width-btn">
-              Create Trade
+            <button type="submit" disabled={createTrade.isPending}>
+              {createTrade.isPending ? "Creating..." : "Create Trade"}
             </button>
           </div>
         </form>
 
-        {message && <p className="form-message success-message">{message}</p>}
-        {error && <p className="form-message error-message">{error}</p>}
+        {createTrade.isSuccess && (
+          <p className="form-message success-message">
+            Trade created successfully
+          </p>
+        )}
+        {createTrade.isError && (
+          <p className="form-message error-message">
+            {createTrade.error?.response?.data?.message ||
+              createTrade.error?.message}
+          </p>
+        )}
       </div>
     </div>
   );
