@@ -69,3 +69,23 @@ textarea {
 .form-row textarea {
   flex: 1;
 }
+
+
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .form-row .form-label {
+    min-width: auto;
+    text-align: left;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 0.9rem;
+  }
+}

@@ -134,3 +134,34 @@
   cursor: not-allowed;
   transform: none;
 }
+
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 1.4rem;
+  }
+
+  .trade-table-wrapper {
+    margin-top: 14px;
+  }
+
+  .trade-table {
+    min-width: 850px;
+  }
+
+  .trade-table th,
+  .trade-table td {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pagination-controls button {
+    width: 100%;
+    max-width: 220px;
+  }
+}

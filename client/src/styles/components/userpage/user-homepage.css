@@ -281,3 +281,47 @@
 .user-homepage-chart-card__empty span {
   font-size: 0.85rem;
 }
+
+
+@media (max-width: 768px) {
+  .user-homepage__title {
+    font-size: 1.8rem;
+  }
+
+  .user-homepage__charts {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .user-homepage__charts > div:first-child,
+  .user-homepage__charts > div:nth-child(4) {
+    grid-column: auto;
+  }
+
+  .user-homepage-chart-card {
+    padding: 12px;
+  }
+
+  .user-homepage-chart-card__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .user-homepage-chart-card__stats,
+  .user-homepage-chart-card__mini-stats {
+    flex-direction: column;
+  }
+
+  .user-homepage-chart-card__chart-wrapper {
+    height: 220px;
+  }
+
+  .user-homepage__empty-state {
+    margin-top: 24px;
+    padding: 24px 16px;
+  }
+
+  .user-homepage__empty-title {
+    font-size: 1.4rem;
+  }
+}
