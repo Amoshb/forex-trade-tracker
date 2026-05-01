@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import TradeTable from "./TradeTable";
 import { authApi } from "../../api";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ShowAllTrades() {
   const [trades, setTrades] = useState([]);
@@ -19,6 +20,8 @@ export default function ShowAllTrades() {
     strategy: "",
     notes: "",
   });
+
+  const queryClient = useQueryClient();
 
   const [filters, setFilters] = useState({
     symbol: "",
@@ -145,6 +148,12 @@ export default function ShowAllTrades() {
       setError("");
 
       await authApi.delete(`/api/trades/delete/${tradeId}`);
+      queryClient.invalidateQueries({ queryKey: ["total_win_and_loss"] });
+      queryClient.invalidateQueries({ queryKey: ["groupBy_strategy"] });
+      queryClient.invalidateQueries({
+        queryKey: ["groupBy_strategy_direction"],
+      });
+      queryClient.invalidateQueries({ queryKey: ["groupBy_strategy_symbol"] });
 
       // instant UI update
       setTrades((prev) => prev.filter((t) => t._id !== tradeId));
@@ -212,6 +221,12 @@ export default function ShowAllTrades() {
       setTrades((prevTrades) =>
         prevTrades.map((trade) => (trade._id === tradeId ? data.trade : trade)),
       );
+      queryClient.invalidateQueries({ queryKey: ["total_win_and_loss"] });
+      queryClient.invalidateQueries({ queryKey: ["groupBy_strategy"] });
+      queryClient.invalidateQueries({
+        queryKey: ["groupBy_strategy_direction"],
+      });
+      queryClient.invalidateQueries({ queryKey: ["groupBy_strategy_symbol"] });
 
       setEditingTradeId(null);
     } catch (error) {
