@@ -1,56 +1,55 @@
 import { useEffect, useState } from "react";
 import AdminUserActivityChart from "./AdminUserActivityChart";
 import { authApi } from "../../api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AdminHomePage({ username }) {
-  const [stats, setStats] = useState({
-    total_users: 0,
-    total_trades: 0,
+  const {
+    data: statsData,
+    isLoading: statsLoading,
+    isError: statsIsError,
+    error: statsError,
+  } = useQuery({
+    queryKey: ["admin-stats"],
+    queryFn: async () => {
+      const response = await authApi.get("/api/admin/user-stats");
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 2,
   });
 
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const {
+    data: usersData,
+    isLoading: usersLoading,
+    isError: usersIsError,
+    error: usersError,
+  } = useQuery({
+    queryKey: ["admin-users-with-trade-count"],
+    queryFn: async () => {
+      const response = await authApi.get("/api/admin/users-with-trade-count");
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 2,
+  });
 
-  const fetchAdminStats = async () => {
-    try {
-      setLoading(true);
-      setError("");
+  const loading = statsLoading || usersLoading;
 
-      const response = await authApi.get(`/api/admin/user-stats`);
+  const error =
+    statsIsError || usersIsError
+      ? statsError?.response?.data?.message ||
+        statsError?.response?.data?.error ||
+        usersError?.response?.data?.message ||
+        usersError?.response?.data?.error ||
+        statsError?.message ||
+        usersError?.message
+      : "";
 
-      const data = response.data;
-      console.log(data);
-
-      setStats({
-        total_users: data.total_users || 0,
-        total_trades: data.total_trades || 0,
-      });
-    } catch (error) {
-      console.error("Error fetching admin stats:", error);
-      setError(error.response?.data?.message || error.message);
-    } finally {
-      setLoading(false);
-    }
+  const stats = {
+    total_users: statsData?.total_users || 0,
+    total_trades: statsData?.total_trades || 0,
   };
 
-  const fetchUsersWithTradeCount = async () => {
-    try {
-      const response = await authApi.get(`/api/admin/users-with-trade-count`);
-
-      const data = response.data;
-
-      setUsers(data.users || []);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      setError(error.response?.data?.message || error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchAdminStats();
-    fetchUsersWithTradeCount();
-  }, []);
+  const users = usersData?.users || [];
 
   return (
     <div>
