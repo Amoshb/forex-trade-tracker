@@ -57,7 +57,6 @@
   background-color: #1d4ed8;
 }
 
-
 .sidebar__top {
   display: flex;
   flex-direction: column;
@@ -71,7 +70,7 @@
 @media (max-width: 768px) {
   .dashboard-page {
     margin-left: 0;
-    padding: 90px 14px 30px;
+    padding: 1px 14px 30px;
   }
 
   .dashboard-title {

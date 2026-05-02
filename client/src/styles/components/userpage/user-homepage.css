@@ -217,10 +217,6 @@
   grid-column: span 2;
 }
 
-.user-homepage__charts > div:nth-child() {
-  grid-column: span 2;
-}
-
 .insight-panel {
   min-height: 320px;
 }
@@ -282,7 +278,6 @@
   font-size: 0.85rem;
 }
 
-
 @media (max-width: 768px) {
   .user-homepage__title {
     font-size: 1.8rem;
@@ -324,4 +319,22 @@
   .user-homepage__empty-title {
     font-size: 1.4rem;
   }
+
+  /* .user-homepage,
+  .user-homepage__charts,
+  .user-homepage-chart-card,
+  .user-homepage-chart-card svg,
+  .recharts-wrapper,
+  .recharts-surface {
+    position: relative;
+    z-index: 1;
+  } */
+}
+@media (max-width: 768px) {
+  .user-homepage-chart-card {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+
 }

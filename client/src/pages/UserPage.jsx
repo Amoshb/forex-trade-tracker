@@ -17,35 +17,34 @@ export default function UserPage({ user, onLogout }) {
 
   return (
     <div className="dashboard-page">
-      <div className="dashboard-content">
-        <div className="dashboard-actions side-nav">
-          <div className="sidebar__top">
-            <button
-              className={isActive("/home") ? "active-btn" : ""}
-              onClick={() => navigate("/home")}
-            >
-              Home Page
-            </button>
+      <div className="dashboard-actions side-nav">
+        <div className="sidebar__top">
+          <button
+            className={isActive("/home") ? "active-btn" : ""}
+            onClick={() => navigate("/home")}
+          >
+            Home Page
+          </button>
 
-            <button
-              className={isActive("/trades") ? "active-btn" : ""}
-              onClick={() => navigate("/trades")}
-            >
-              Show My Trades
-            </button>
+          <button
+            className={isActive("/trades") ? "active-btn" : ""}
+            onClick={() => navigate("/trades")}
+          >
+            Show My Trades
+          </button>
 
-            <button
-              className={isActive("/create-trade") ? "active-btn" : ""}
-              onClick={() => navigate("/create-trade")}
-            >
-              Create New Trade
-            </button>
-          </div>
-          <div className="sidebar__bottom">
-            <button onClick={onLogout}>Logout</button>
-          </div>
+          <button
+            className={isActive("/create-trade") ? "active-btn" : ""}
+            onClick={() => navigate("/create-trade")}
+          >
+            Create New Trade
+          </button>
         </div>
-
+        <div className="sidebar__bottom">
+          <button onClick={onLogout}>Logout</button>
+        </div>
+      </div>
+      <div className="dashboard-content">
         <div className="dashboard-section">
           <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
