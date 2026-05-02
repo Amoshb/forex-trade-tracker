@@ -70,7 +70,7 @@
 @media (max-width: 768px) {
   .dashboard-page {
     margin-left: 0;
-    padding: 1px 14px 30px;
+    padding: 80px 14px 30px;
   }
 
   .dashboard-title {
@@ -81,15 +81,19 @@
   .dashboard-actions {
     width: 100%;
     min-height: auto;
-    padding: 12px;
+    padding: 9px;
     flex-direction: row;
     gap: 10px;
     overflow-x: auto;
   }
 
   .dashboard-actions button {
-    min-width: 130px;
-    padding: 9px 14px;
-    font-size: 0.85rem;
+    min-width: 1rem;
+    padding: 10px 14px;
+    font-size: 0.66rem;
+  }
+
+  .dashboard-section {
+    margin: 0px;
   }
 }
