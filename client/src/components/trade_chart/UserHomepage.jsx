@@ -22,7 +22,7 @@ export default function UserHomepage({ username }) {
   });
 
 
-  const totalTrades = data?.total;
+  const totalTrades = data?.data?.total;
   const hasNoTrades =
     !isLoading && !isError && data && totalTrades === 0;
 
