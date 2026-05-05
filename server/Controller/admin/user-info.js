@@ -4,7 +4,7 @@ const Trade = require("../../Model/trade");
 
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find({}).select("-password");
 
     res.status(200).json({
       success: true,
@@ -54,18 +54,18 @@ const deleteUserAndTrade = async (req, res) => {
     });
     const deletedUser = await User.findByIdAndDelete(getUserID);
 
-    if (!deletedUser){
-        return res.status(404).json({
-            success: false,
-            message: "User not found"
-        })
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
     res.status(200).json({
-        success: true,
-        deleted_trade: userTrades.deletedCount,
-        message: "User is deleted"
-    })
+      success: true,
+      deleted_trade: userTrades.deletedCount,
+      message: "User is deleted",
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -116,5 +116,5 @@ module.exports = {
   getUsers,
   getOneUser,
   deleteUserAndTrade,
-  updateUserRole
+  updateUserRole,
 };
