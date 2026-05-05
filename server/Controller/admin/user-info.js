@@ -61,6 +61,13 @@ const deleteUserAndTrade = async (req, res) => {
       });
     }
 
+    if (req.userInfo.userID === getUserID) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot delete your own account",
+      });
+    }
+
     res.status(200).json({
       success: true,
       deleted_trade: userTrades.deletedCount,
@@ -96,6 +103,13 @@ const updateUserRole = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "User not found",
+      });
+    }
+
+    if (req.userInfo.userID === userId) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot change your own role",
       });
     }
 
