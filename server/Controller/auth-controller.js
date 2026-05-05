@@ -31,7 +31,11 @@ const registerUser = async (req, res) => {
       res.status(201).json({
         success: true,
         message: "User registered successfully",
-        user: newUser,
+        user: {
+          id: newUser._id,
+          username: newUser.username,
+          role: newUser.role,
+        },
       });
     } else {
       res.status(400).json({
