@@ -49,6 +49,13 @@ const getOneUser = async (req, res) => {
 const deleteUserAndTrade = async (req, res) => {
   try {
     const getUserID = req.params.id;
+
+    if (req.userInfo.userID === getUserID) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot delete your own account",
+      });
+    }
     const userTrades = await Trade.deleteMany({
       userId: new mongoose.Types.ObjectId(getUserID),
     });
@@ -58,13 +65,6 @@ const deleteUserAndTrade = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "User not found",
-      });
-    }
-
-    if (req.userInfo.userID === getUserID) {
-      return res.status(400).json({
-        success: false,
-        message: "You cannot delete your own account",
       });
     }
 
@@ -93,6 +93,13 @@ const updateUserRole = async (req, res) => {
       });
     }
 
+    if (req.userInfo.userID === userId) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot change your own role",
+      });
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { role },
@@ -103,13 +110,6 @@ const updateUserRole = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "User not found",
-      });
-    }
-
-    if (req.userInfo.userID === userId) {
-      return res.status(400).json({
-        success: false,
-        message: "You cannot change your own role",
       });
     }
 
