@@ -4,9 +4,9 @@ const jwt = require("jsonwebtoken");
 
 const registerUser = async (req, res) => {
   try {
-    const { userName, userPass } = req.body;
+    const { username, password } = req.body;
 
-    const existingUser = await User.findOne({ username: userName });
+    const existingUser = await User.findOne({ username });
 
     if (existingUser) {
       return res.status(400).json({
@@ -16,12 +16,12 @@ const registerUser = async (req, res) => {
       });
     }
 
-    if (userName && userPass) {
+    if (username && password) {
       const salt = await bycrypt.genSalt(10);
-      const hashedPassword = await bycrypt.hash(userPass, salt);
+      const hashedPassword = await bycrypt.hash(password, salt);
 
       const newUser = new User({
-        username: userName,
+        username: username,
         password: hashedPassword,
         role: "user",
       });
