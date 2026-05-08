@@ -7,13 +7,12 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
 } from "recharts";
 import { authApi } from "../../api";
 import { useQuery } from "@tanstack/react-query";
 import ChartStateWrapper from "./ChartStateWrapper";
 
-export default function StrategyWinLossChart() {
+export default function StrategyUsageChart() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["groupBy_strategy"],
     queryFn: async () => {
@@ -24,41 +23,35 @@ export default function StrategyWinLossChart() {
 
   const chartData = useMemo(() => {
     if (!data?.data?.length) return [];
+
     return data.data.map((item) => ({
       strategy: item.strategy,
-      wins: item.win_count,
-      losses: item.loss_count,
-      breakeven: item.breakeven_count,
+      trades: item.trade_count,
     }));
   }, [data]);
 
   return (
     <ChartStateWrapper
-      title="Strategy Win/Loss"
+      title="Strategy Usage"
       isLoading={isLoading}
       isError={isError}
       error={error}
     >
       <div className="user-homepage-chart-card">
         <h2 className="user-homepage-chart-card__title">
-          Wins vs Losses (Per Strategy)
+          Strategy Usage (Trades)
         </h2>
 
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={chartData} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" />
 
-            {/* numbers go on X */}
             <XAxis type="number" />
+            <YAxis dataKey="strategy" type="category" width={120} />
 
-            {/* categories go on Y */}
-            <YAxis type="category" dataKey="strategy" width={120} />
+            <Tooltip formatter={(val) => [val, "Trades"]} />
 
-            <Tooltip />
-            <Legend />
-
-            <Bar dataKey="wins" fill="#22c55e" name="Wins" />
-            <Bar dataKey="losses" fill="#ef4444" name="Losses" />
+            <Bar dataKey="trades" fill="#3b82f6" />
           </BarChart>
         </ResponsiveContainer>
       </div>

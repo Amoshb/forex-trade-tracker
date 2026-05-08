@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { authApi } from "../../api";
 import { useQuery } from "@tanstack/react-query";
+import ChartStateWrapper from "./ChartStateWrapper";
 
 export default function StrategySymbolChart() {
   const [selectedStrategy, setSelectedStrategy] = useState("");
@@ -56,105 +57,86 @@ export default function StrategySymbolChart() {
       }));
   }, [rawData, activeStrategy]);
 
-  if (isLoading) {
-    return (
-      <div className="user-homepage-chart-card">
-        <h2 className="user-homepage-chart-card__title">
-          Strategy Performance by Symbol
-        </h2>
-        <p className="user-homepage-chart-card__message">
-          Loading strategy-symbol chart...
-        </p>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="user-homepage-chart-card">
-        <h2 className="user-homepage-chart-card__title">
-          Strategy Performance by Symbol
-        </h2>
-        <p className="user-homepage-chart-card__message user-homepage-chart-card__message--error">
-          {error?.message}
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="user-homepage-chart-card">
-      <div className="user-homepage-chart-card__header">
-        <h2 className="user-homepage-chart-card__title">
-          Strategy Performance by Symbol
-        </h2>
+    <ChartStateWrapper
+      title="Strategy Performance by Symbol"
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+    >
+      <div className="user-homepage-chart-card">
+        <div className="user-homepage-chart-card__header">
+          <h2 className="user-homepage-chart-card__title">
+            Strategy Performance by Symbol
+          </h2>
 
-        <select
-          className="user-homepage-chart-card__select"
-          value={activeStrategy}
-          onChange={(e) => setSelectedStrategy(e.target.value)}
-        >
-          {strategies.map((strategy) => (
-            <option key={strategy} value={strategy}>
-              {strategy}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <ResponsiveContainer width="100%" height={280}>
-        <BarChart
-          data={filteredChartData}
-          layout="vertical"
-          margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" />
-          <YAxis
-            type="category"
-            dataKey="name"
-            width={80}
-            tick={{ fontSize: 12 }}
-          />
-          <Tooltip
-            formatter={(value, name) => {
-              const num = Number(value);
-
-              if (name === "totalPnL") {
-                return [
-                  num.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }),
-                  `Net PnL ${num < 0 ? "(Loss)" : "(Profit)"}`,
-                ];
-              }
-
-              if (name === "winCount") {
-                return [num, "Wins"];
-              }
-
-              if (name === "lossCount") {
-                return [num, "Losses"];
-              }
-
-              if (name === "tradeCount") {
-                return [num, "Trades"];
-              }
-
-              return [num, name];
-            }}
-          />
-          <Bar dataKey="totalPnL" radius={[0, 6, 6, 0]}>
-            {filteredChartData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={entry.totalPnL >= 0 ? "#22c55e" : "#ef4444"}
-              />
+          <select
+            className="user-homepage-chart-card__select"
+            value={activeStrategy}
+            onChange={(e) => setSelectedStrategy(e.target.value)}
+          >
+            {strategies.map((strategy) => (
+              <option key={strategy} value={strategy}>
+                {strategy}
+              </option>
             ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+          </select>
+        </div>
+
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart
+            data={filteredChartData}
+            layout="vertical"
+            margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" />
+            <YAxis
+              type="category"
+              dataKey="name"
+              width={80}
+              tick={{ fontSize: 12 }}
+            />
+            <Tooltip
+              formatter={(value, name) => {
+                const num = Number(value);
+
+                if (name === "totalPnL") {
+                  return [
+                    num.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }),
+                    `Net PnL ${num < 0 ? "(Loss)" : "(Profit)"}`,
+                  ];
+                }
+
+                if (name === "winCount") {
+                  return [num, "Wins"];
+                }
+
+                if (name === "lossCount") {
+                  return [num, "Losses"];
+                }
+
+                if (name === "tradeCount") {
+                  return [num, "Trades"];
+                }
+
+                return [num, name];
+              }}
+            />
+            <Bar dataKey="totalPnL" radius={[0, 6, 6, 0]}>
+              {filteredChartData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.totalPnL >= 0 ? "#22c55e" : "#ef4444"}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </ChartStateWrapper>
   );
 }

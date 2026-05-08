@@ -1,6 +1,7 @@
-import {useMemo } from "react";
+import { useMemo } from "react";
 import { authApi } from "../../api";
 import { useQuery } from "@tanstack/react-query";
+import ChartStateWrapper from "./ChartStateWrapper";
 
 export default function InsightPanel() {
   const { data, isLoading, isError, error } = useQuery({
@@ -10,8 +11,6 @@ export default function InsightPanel() {
       return res.data;
     },
   });
-
-
 
   const insights = useMemo(() => {
     if (!data?.data?.length) return null;
@@ -57,26 +56,6 @@ export default function InsightPanel() {
     };
   }, [data]);
 
-  if (isLoading) {
-    return (
-      <div className="user-homepage-chart-card insight-panel">
-        <h2 className="user-homepage-chart-card__title">Insights</h2>
-        <p className="user-homepage-chart-card__message">Loading insights...</p>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="user-homepage-chart-card insight-panel">
-        <h2 className="user-homepage-chart-card__title">Insights</h2>
-        <p className="user-homepage-chart-card__message user-homepage-chart-card__message--error">
-          {error.message}
-        </p>
-      </div>
-    );
-  }
-
   if (!insights) {
     return (
       <div className="user-homepage-chart-card insight-panel">
@@ -90,60 +69,67 @@ export default function InsightPanel() {
   }
 
   return (
-    <div className="user-homepage-chart-card insight-panel">
-      <h2 className="user-homepage-chart-card__title">Insights</h2>
+    <ChartStateWrapper
+      title="Insights"
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+    >
+      <div className="user-homepage-chart-card insight-panel">
+        <h2 className="user-homepage-chart-card__title">Insights</h2>
 
-      <div className="insight-panel__list">
-        <div className="insight-panel__item">
-          <span className="insight-panel__label">Best Strategy</span>
-          <strong className="insight-panel__value">
-            {insights.bestStrategy.strategy}
-          </strong>
-          <small className="insight-panel__subvalue">
-            Net PnL: {insights.bestStrategy.totalPnL.toFixed(2)}
-          </small>
-        </div>
+        <div className="insight-panel__list">
+          <div className="insight-panel__item">
+            <span className="insight-panel__label">Best Strategy</span>
+            <strong className="insight-panel__value">
+              {insights.bestStrategy.strategy}
+            </strong>
+            <small className="insight-panel__subvalue">
+              Net PnL: {insights.bestStrategy.totalPnL.toFixed(2)}
+            </small>
+          </div>
 
-        <div className="insight-panel__item">
-          <span className="insight-panel__label">Most Consistent</span>
-          <strong className="insight-panel__value">
-            {insights.mostConsistent.strategy}
-          </strong>
-          <small className="insight-panel__subvalue">
-            Win Rate: {insights.mostConsistent.winRate.toFixed(1)}%
-          </small>
-        </div>
+          <div className="insight-panel__item">
+            <span className="insight-panel__label">Most Consistent</span>
+            <strong className="insight-panel__value">
+              {insights.mostConsistent.strategy}
+            </strong>
+            <small className="insight-panel__subvalue">
+              Win Rate: {insights.mostConsistent.winRate.toFixed(1)}%
+            </small>
+          </div>
 
-        <div className="insight-panel__item">
-          <span className="insight-panel__label">Most Efficient</span>
-          <strong className="insight-panel__value">
-            {insights.mostEfficient.strategy}
-          </strong>
-          <small className="insight-panel__subvalue">
-            Avg PnL: {insights.mostEfficient.avgPnL.toFixed(2)}
-          </small>
-        </div>
+          <div className="insight-panel__item">
+            <span className="insight-panel__label">Most Efficient</span>
+            <strong className="insight-panel__value">
+              {insights.mostEfficient.strategy}
+            </strong>
+            <small className="insight-panel__subvalue">
+              Avg PnL: {insights.mostEfficient.avgPnL.toFixed(2)}
+            </small>
+          </div>
 
-        <div className="insight-panel__item">
-          <span className="insight-panel__label">Most Used</span>
-          <strong className="insight-panel__value">
-            {insights.mostUsed.strategy}
-          </strong>
-          <small className="insight-panel__subvalue">
-            Trades: {insights.mostUsed.tradeCount}
-          </small>
-        </div>
+          <div className="insight-panel__item">
+            <span className="insight-panel__label">Most Used</span>
+            <strong className="insight-panel__value">
+              {insights.mostUsed.strategy}
+            </strong>
+            <small className="insight-panel__subvalue">
+              Trades: {insights.mostUsed.tradeCount}
+            </small>
+          </div>
 
-        <div className="insight-panel__item insight-panel__item--warning">
-          <span className="insight-panel__label">Weakest Strategy</span>
-          <strong className="insight-panel__value">
-            {insights.weakestStrategy.strategy}
-          </strong>
-          <small className="insight-panel__subvalue">
-            Net PnL: {insights.weakestStrategy.totalPnL.toFixed(2)}
-          </small>
+          <div className="insight-panel__item insight-panel__item--warning">
+            <span className="insight-panel__label">Weakest Strategy</span>
+            <strong className="insight-panel__value">
+              {insights.weakestStrategy.strategy}
+            </strong>
+            <small className="insight-panel__subvalue">
+              Net PnL: {insights.weakestStrategy.totalPnL.toFixed(2)}
+            </small>
+          </div>
         </div>
       </div>
-    </div>
+    </ChartStateWrapper>
   );
 }

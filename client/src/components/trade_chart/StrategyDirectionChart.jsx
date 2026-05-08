@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { authApi } from "../../api";
 import { useQuery } from "@tanstack/react-query";
+import ChartStateWrapper from "./ChartStateWrapper";
 
 export default function StrategyDirectionChart() {
   const { data, isLoading, isError, error } = useQuery({
@@ -69,92 +70,73 @@ export default function StrategyDirectionChart() {
     );
   }, [chartData]);
 
-  if (isLoading) {
-    return (
-      <div className="user-homepage-chart-card">
-        <h2 className="user-homepage-chart-card__title">
-          Strategy Buy vs Sell
-        </h2>
-        <p className="user-homepage-chart-card__message">
-          Loading strategy-direction chart...
-        </p>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="user-homepage-chart-card">
-        <h2 className="user-homepage-chart-card__title">
-          Strategy Buy vs Sell
-        </h2>
-        <p className="user-homepage-chart-card__message user-homepage-chart-card__message--error">
-          {error?.message}
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="user-homepage-chart-card">
-      <div className="user-homepage-chart-card__header">
-        <h2 className="user-homepage-chart-card__title">
-          Strategy Buy vs Sell
-        </h2>
-      </div>
-
-      <div className="user-homepage-chart-card__mini-stats">
-        <div className="user-homepage-chart-card__mini-stat">
-          <span>Buy PnL</span>
-          <strong>{totals.buyTotal.toFixed(2)}</strong>
+    <ChartStateWrapper
+      title="Strategy Buy vs Sell"
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+    >
+      <div className="user-homepage-chart-card">
+        <div className="user-homepage-chart-card__header">
+          <h2 className="user-homepage-chart-card__title">
+            Strategy Buy vs Sell
+          </h2>
         </div>
 
-        <div className="user-homepage-chart-card__mini-stat">
-          <span>Sell PnL</span>
-          <strong>{totals.sellTotal.toFixed(2)}</strong>
+        <div className="user-homepage-chart-card__mini-stats">
+          <div className="user-homepage-chart-card__mini-stat">
+            <span>Buy PnL</span>
+            <strong>{totals.buyTotal.toFixed(2)}</strong>
+          </div>
+
+          <div className="user-homepage-chart-card__mini-stat">
+            <span>Sell PnL</span>
+            <strong>{totals.sellTotal.toFixed(2)}</strong>
+          </div>
         </div>
+
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={chartData}
+            layout="vertical"
+            margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" domain={["auto", "auto"]} />
+            <YAxis
+              type="category"
+              dataKey="strategy"
+              width={130}
+              tick={{ fontSize: 12 }}
+            />
+            <Tooltip
+              formatter={(value, name) => {
+                const numericValue = Number(value);
+                const label = name === "buy" ? "Buy PnL" : "Sell PnL";
+
+                return [
+                  numericValue.toFixed(2),
+                  `${label} ${numericValue < 0 ? "(Loss)" : "(Profit)"}`,
+                ];
+              }}
+            />
+            <Legend />
+            <Bar
+              dataKey="buy"
+              fill="#22c55e"
+              barSize={10}
+              radius={[0, 6, 6, 0]}
+            />
+            <Bar
+              dataKey="sell"
+              fill="#ef4444"
+              barSize={10}
+              radius={[0, 6, 6, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
-
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={chartData}
-          layout="vertical"
-          margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" domain={["auto", "auto"]} />
-          <YAxis
-            type="category"
-            dataKey="strategy"
-            width={130}
-            tick={{ fontSize: 12 }}
-          />
-          <Tooltip
-            formatter={(value, name) => {
-              const numericValue = Number(value);
-              const label = name === "buy" ? "Buy PnL" : "Sell PnL";
-
-              return [
-                numericValue.toFixed(2),
-                `${label} ${numericValue < 0 ? "(Loss)" : "(Profit)"}`,
-              ];
-            }}
-          />
-          <Legend />
-          <Bar
-            dataKey="buy"
-            fill="#22c55e"
-            barSize={10}
-            radius={[0, 6, 6, 0]}
-          />
-          <Bar
-            dataKey="sell"
-            fill="#ef4444"
-            barSize={10}
-            radius={[0, 6, 6, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+    </ChartStateWrapper>
   );
 }

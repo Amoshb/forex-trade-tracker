@@ -13,7 +13,7 @@ import { authApi } from "../../api";
 import { useQuery } from "@tanstack/react-query";
 import ChartStateWrapper from "./ChartStateWrapper";
 
-export default function StrategyWinRateChart() {
+export default function StrategyEfficiencyChart() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["groupBy_strategy"],
     queryFn: async () => {
@@ -23,31 +23,32 @@ export default function StrategyWinRateChart() {
   });
 
   const chartData = useMemo(() => {
+    // Wait for data to load before processing
     if (!data?.data?.length) return [];
 
+    // Transform and sort raw API data into chart-friendly format
     return data.data
       .map((item) => {
-        const winRate =
-          item.trade_count > 0 ? (item.win_count / item.trade_count) * 100 : 0;
-
+        const avgPnL =
+          item.trade_count > 0 ? item.totalPnL / item.trade_count : 0;
         return {
           strategy: item.strategy,
-          winRate: Number(winRate.toFixed(1)),
+          avgPnL: Number(avgPnL.toFixed(2)),
         };
       })
-      .sort((a, b) => b.winRate - a.winRate);
+      .sort((a, b) => b.avgPnL - a.avgPnL);
   }, [data]);
 
   return (
     <ChartStateWrapper
-      title="Strategy Win Rate"
+      title="Strategy Efficiency"
       isLoading={isLoading}
       isError={isError}
       error={error}
     >
       <div className="user-homepage-chart-card">
         <h2 className="user-homepage-chart-card__title">
-          Strategy Consistency (Win %)
+          Strategy Efficiency (Avg PnL)
         </h2>
 
         <ResponsiveContainer width="100%" height={300}>
@@ -57,19 +58,21 @@ export default function StrategyWinRateChart() {
             margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" domain={[0, 100]} />
+            <XAxis type="number" />
             <YAxis
               type="category"
               dataKey="strategy"
               width={130}
               tick={{ fontSize: 12 }}
             />
-            <Tooltip formatter={(val) => [`${val}%`, "Win Rate"]} />
-            <Bar dataKey="winRate" radius={[0, 6, 6, 0]}>
+            <Tooltip
+              formatter={(val) => [Number(val).toFixed(2), "Avg PnL per Trade"]}
+            />
+            <Bar dataKey="avgPnL" radius={[0, 6, 6, 0]}>
               {chartData.map((entry, index) => (
                 <Cell
                   key={index}
-                  fill={entry.winRate >= 50 ? "#22c55e" : "#ef4444"}
+                  fill={entry.avgPnL >= 0 ? "#22c55e" : "#ef4444"}
                 />
               ))}
             </Bar>
