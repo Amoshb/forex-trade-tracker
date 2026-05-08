@@ -89,6 +89,7 @@ export default function CreateTrade() {
           <div className="form-group form-row">
             <label className="form-label">Open Price: </label>
             <input
+              required
               type="number"
               step="0.00001"
               name="openPrice"
@@ -101,6 +102,7 @@ export default function CreateTrade() {
           <div className="form-group form-row">
             <label className="form-label">Close Price: </label>
             <input
+              required
               type="number"
               step="0.00001"
               name="closePrice"
@@ -113,6 +115,7 @@ export default function CreateTrade() {
           <div className="form-group form-row">
             <label className="form-label">Volume: </label>
             <input
+              required
               type="number"
               step="0.01"
               name="volume"
@@ -125,6 +128,7 @@ export default function CreateTrade() {
           <div className="form-group form-row">
             <label className="form-label">Profit/Loss: </label>
             <input
+              required
               type="number"
               step="0.00001"
               name="profitLoss"
@@ -137,6 +141,7 @@ export default function CreateTrade() {
           <div className="form-group form-row">
             <label className="form-label">Strategy: </label>
             <input
+              required
               type="text"
               name="strategy"
               placeholder="Strategy"

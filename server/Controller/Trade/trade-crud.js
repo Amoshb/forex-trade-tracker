@@ -20,14 +20,16 @@ const createTrade = async (req, res) => {
     const newTrade = new Trade({
       userId,
       symbol,
-      direction,
+      direction: direction.trim().toUpperCase(),
       volume,
       openPrice,
       closePrice,
       stopLoss,
       takeProfit,
       profitLoss,
-      strategy,
+      strategy: strategy.trim().toLowerCase().replace(/(?:^|\s)\w/g, function(match) {
+        return match.toUpperCase();
+        }),
       notes,
     });
 
