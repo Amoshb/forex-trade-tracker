@@ -58,6 +58,24 @@ export default function TradeRow({
         <td>
           <input
             type="number"
+            step="0.00001"
+            name="stopLoss"
+            value={editFormData.stopLoss}
+            onChange={onEditChange}
+          />
+        </td>
+        <td>
+          <input
+            type="number"
+            step="0.00001"
+            name="takeProfit"
+            value={editFormData.takeProfit}
+            onChange={onEditChange}
+          />
+        </td>
+        <td>
+          <input
+            type="number"
             step="0.01"
             name="volume"
             value={editFormData.volume}
@@ -105,6 +123,8 @@ export default function TradeRow({
       <td>{trade.direction}</td>
       <td>{trade.openPrice}</td>
       <td>{trade.closePrice}</td>
+      <td>{trade.stopLoss ?? "—"}</td>
+      <td>{trade.takeProfit ?? "—"}</td>
       <td>{trade.volume}</td>
       <td className={profit > 0 ? "pl-profit" : profit < 0 ? "pl-loss" : ""}>
         {trade.profitLoss}

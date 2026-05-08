@@ -22,7 +22,7 @@ const getUsers = async (req, res) => {
 const getOneUser = async (req, res) => {
   try {
     const getUserID = req.params.id;
-    const userDetailsbyID = await User.findById(getUserID);
+    const userDetailsbyID = await User.findById(getUserID).select("-password");
     const userTradeData = await Trade.find({
       userId: new mongoose.Types.ObjectId(getUserID),
     });
@@ -56,9 +56,7 @@ const deleteUserAndTrade = async (req, res) => {
         message: "You cannot delete your own account",
       });
     }
-    const userTrades = await Trade.deleteMany({
-      userId: new mongoose.Types.ObjectId(getUserID),
-    });
+    
     const deletedUser = await User.findByIdAndDelete(getUserID);
 
     if (!deletedUser) {
@@ -67,6 +65,10 @@ const deleteUserAndTrade = async (req, res) => {
         message: "User not found",
       });
     }
+
+    const userTrades = await Trade.deleteMany({
+      userId: new mongoose.Types.ObjectId(getUserID),
+    });
 
     res.status(200).json({
       success: true,

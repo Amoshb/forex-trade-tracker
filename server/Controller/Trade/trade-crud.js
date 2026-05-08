@@ -19,16 +19,19 @@ const createTrade = async (req, res) => {
 
     const newTrade = new Trade({
       userId,
-      symbol,
-      direction: direction.trim().toUpperCase(),
+      symbol: symbol.trim().toUpperCase(),
+      direction: direction.trim().toLowerCase(),
       volume,
       openPrice,
       closePrice,
       stopLoss,
       takeProfit,
       profitLoss,
-      strategy: strategy.trim().toLowerCase().replace(/(?:^|\s)\w/g, function(match) {
-        return match.toUpperCase();
+      strategy: strategy
+        .trim()
+        .toLowerCase()
+        .replace(/(?:^|\s)\w/g, function (match) {
+          return match.toUpperCase();
         }),
       notes,
     });
@@ -92,14 +95,21 @@ const deleteTrade = async (req, res) => {
 
 const updateTrade = async (req, res) => {
   try {
-    const userId = req.userInfo.userID;
+    const currentUserId = req.userInfo.userID;
     const tradeId = req.params.id;
-    const { _userId, ...updateData } = req.body;
+
+    const { userId, _id, ...updateData } = req.body;
 
     const trade = await Trade.findOneAndUpdate(
-      { _id: tradeId, userId },
+      {
+        _id: tradeId,
+        userId: currentUserId,
+      },
       updateData,
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+      },
     );
 
     if (!trade) {
@@ -108,6 +118,7 @@ const updateTrade = async (req, res) => {
         message: "Trade not found",
       });
     }
+
     res.status(200).json({
       success: true,
       message: "Trade updated successfully",

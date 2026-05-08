@@ -8,6 +8,8 @@ export default function CreateTrade() {
     direction: "",
     openPrice: "",
     closePrice: "",
+    stopLoss: "",
+    takeProfit: "",
     volume: "",
     profitLoss: "",
     strategy: "",
@@ -35,6 +37,8 @@ export default function CreateTrade() {
         direction: "",
         openPrice: "",
         closePrice: "",
+        stopLoss: "",
+        takeProfit: "",
         volume: "",
         profitLoss: "",
         strategy: "",
@@ -46,6 +50,8 @@ export default function CreateTrade() {
         queryKey: ["groupBy_strategy_direction"],
       });
       queryClient.invalidateQueries({ queryKey: ["groupBy_strategy_symbol"] });
+      queryClient.invalidateQueries({ queryKey: ["paginated_trades"] });
+      queryClient.invalidateQueries({ queryKey: ["trade_filter_options"] });
     },
   });
 
@@ -108,6 +114,30 @@ export default function CreateTrade() {
               name="closePrice"
               placeholder="Close Price"
               value={formData.closePrice}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="form-group form-row">
+            <label className="form-label">Stop Loss: </label>
+            <input
+              type="number"
+              step="0.00001"
+              name="stopLoss"
+              placeholder="Stop Loss (optional)"
+              value={formData.stopLoss}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="form-group form-row">
+            <label className="form-label">Take Profit: </label>
+            <input
+              type="number"
+              step="0.00001"
+              name="takeProfit"
+              placeholder="Take Profit (optional)"
+              value={formData.takeProfit}
               onChange={handleChange}
             />
           </div>

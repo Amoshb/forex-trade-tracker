@@ -19,6 +19,8 @@ export default function TradeTable({
             <th>Direction</th>
             <th>Entry Price</th>
             <th>Exit Price</th>
+            <th>Stop Loss</th>
+            <th>Take Profit</th>
             <th>Volume</th>
             <th>Profit/Loss</th>
             <th>Strategy</th>
