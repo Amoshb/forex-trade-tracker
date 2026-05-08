@@ -1,15 +1,19 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import TradeTable from "./TradeTable";
 import { authApi } from "../../api";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function ShowAllTrades() {
-  const [trades, setTrades] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const queryClient = useQueryClient();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const limit = 10;
+  const currentPage = Math.max(Number(searchParams.get("page")) || 1, 1);
 
   const [editingTradeId, setEditingTradeId] = useState(null);
+
   const [editFormData, setEditFormData] = useState({
     symbol: "",
     direction: "",
@@ -21,91 +25,149 @@ export default function ShowAllTrades() {
     notes: "",
   });
 
-  const queryClient = useQueryClient();
-
   const [filters, setFilters] = useState({
     symbol: "",
     direction: "",
     strategy: "",
   });
 
-  const [filterOptions, setFilterOptions] = useState({
+  const analyticsQueryKeys = [
+    ["total_win_and_loss"],
+    ["groupBy_strategy"],
+    ["groupBy_strategy_direction"],
+    ["groupBy_strategy_symbol"],
+  ];
+
+  const invalidateAnalytics = () => {
+    analyticsQueryKeys.forEach((queryKey) => {
+      queryClient.invalidateQueries({ queryKey });
+    });
+  };
+
+  const filterOptionsQuery = useQuery({
+    queryKey: ["trade_filter_options"],
+    queryFn: async () => {
+      const response = await authApi.get("/api/trades/filter-options");
+
+      return {
+        symbols: response.data.symbols || [],
+        directions: response.data.directions || [],
+        strategies: response.data.strategies || [],
+      };
+    },
+  });
+
+  const tradesQuery = useQuery({
+    queryKey: ["paginated_trades", currentPage, filters],
+    queryFn: async () => {
+      const query = new URLSearchParams({
+        page: String(currentPage),
+        limit: String(limit),
+      });
+
+      if (filters.symbol) query.append("symbol", filters.symbol);
+      if (filters.direction) query.append("direction", filters.direction);
+      if (filters.strategy) query.append("strategy", filters.strategy);
+
+      const response = await authApi.get(
+        `/api/trades/all_trade_paginated?${query.toString()}`,
+      );
+
+      return {
+        trades: response.data.trades || [],
+        totalPages: response.data.pagination?.totalPages || 1,
+        totalTrades: response.data.pagination?.totalTrades || 0,
+      };
+    },
+    keepPreviousData: true,
+  });
+
+  const deleteTradeMutation = useMutation({
+    mutationFn: async (tradeId) => {
+      await authApi.delete(`/api/trades/delete/${tradeId}`);
+      return tradeId;
+    },
+    onSuccess: async () => {
+      invalidateAnalytics();
+
+      await queryClient.invalidateQueries({
+        queryKey: ["paginated_trades"],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["trade_filter_options"],
+      });
+
+      const trades = tradesQuery.data?.trades || [];
+
+      const isLastTradeOnPage = trades.length === 1;
+      const shouldMoveBack = isLastTradeOnPage && currentPage > 1;
+
+      if (shouldMoveBack) {
+        setSearchParams({ page: String(currentPage - 1) });
+      }
+    },
+  });
+
+  const updateTradeMutation = useMutation({
+    mutationFn: async (tradeId) => {
+      const cleanedFormData = {
+        ...editFormData,
+        symbol: editFormData.symbol.trim().toUpperCase(),
+        direction: editFormData.direction,
+        strategy: editFormData.strategy.trim(),
+        notes: editFormData.notes.trim(),
+      };
+
+      const response = await authApi.put(
+        `/api/trades/update/${tradeId}`,
+        cleanedFormData,
+      );
+
+      return response.data.trade;
+    },
+    onSuccess: async () => {
+      invalidateAnalytics();
+
+      await queryClient.invalidateQueries({
+        queryKey: ["paginated_trades"],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["trade_filter_options"],
+      });
+
+      setEditingTradeId(null);
+      resetEditForm();
+    },
+  });
+
+  const filterOptions = filterOptionsQuery.data || {
     symbols: [],
     directions: [],
     strategies: [],
-  });
+  };
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const trades = tradesQuery.data?.trades || [];
+  const totalPages = tradesQuery.data?.totalPages || 1;
+  const totalTrades = tradesQuery.data?.totalTrades || 0;
 
-  const limit = 10;
-  const currentPage = Math.max(Number(searchParams.get("page")) || 1, 1);
+  const loading =
+    tradesQuery.isLoading ||
+    filterOptionsQuery.isLoading ||
+    deleteTradeMutation.isPending ||
+    updateTradeMutation.isPending;
 
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalTrades, setTotalTrades] = useState(0);
-
-  const fetchFilterOptions = useCallback(async () => {
-    try {
-      const response = await authApi.get(`/api/trades/filter-options`);
-
-      const data = response.data;
-      console.log("filter options response:", data);
-
-      setFilterOptions({
-        symbols: data.symbols || [],
-        directions: data.directions || [],
-        strategies: data.strategies || [],
-      });
-    } catch (error) {
-      console.error(
-        "Error fetching filter options:",
-        error.response?.data?.message || error.message,
-      );
-    }
-  }, []);
-
-  const fetchPaginatedTrades = useCallback(
-    async (page) => {
-      try {
-        setLoading(true);
-        setError("");
-
-        const query = new URLSearchParams({
-          page: String(page),
-          limit: String(limit),
-        });
-
-        if (filters.symbol) query.append("symbol", filters.symbol);
-        if (filters.direction) query.append("direction", filters.direction);
-        if (filters.strategy) query.append("strategy", filters.strategy);
-
-        const url = `/api/trades/all_trade_paginated?${query.toString()}`;
-        console.log("fetch trades url:", url);
-
-        const response = await authApi.get(url);
-
-        const data = response.data;
-        console.log("paginated trades response:", data);
-
-        setTrades(data.trades || []);
-        setTotalPages(data.pagination?.totalPages || 1);
-        setTotalTrades(data.pagination?.totalTrades || 0);
-      } catch (error) {
-        console.error("Error fetching trades:", error);
-        setError(error.response?.data?.message || error.message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [filters],
-  );
-
-  useEffect(() => {
-    fetchFilterOptions();
-  }, [fetchFilterOptions]);
-
-  useEffect(() => {
-    fetchPaginatedTrades(currentPage);
-  }, [currentPage, fetchPaginatedTrades]);
+  const error =
+    tradesQuery.error?.response?.data?.message ||
+    tradesQuery.error?.message ||
+    filterOptionsQuery.error?.response?.data?.message ||
+    filterOptionsQuery.error?.message ||
+    deleteTradeMutation.error?.response?.data?.message ||
+    deleteTradeMutation.error?.message ||
+    updateTradeMutation.error?.response?.data?.message ||
+    updateTradeMutation.error?.message ||
+    "";
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -138,54 +200,32 @@ export default function ShowAllTrades() {
     setSearchParams({ page: "1" });
   };
 
-  const handleDeleteTrade = async (tradeId) => {
+  const handleDeleteTrade = (tradeId) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this trade?",
     );
+
     if (!confirmed) return;
 
-    try {
-      setError("");
-
-      await authApi.delete(`/api/trades/delete/${tradeId}`);
-      queryClient.invalidateQueries({ queryKey: ["total_win_and_loss"] });
-      queryClient.invalidateQueries({ queryKey: ["groupBy_strategy"] });
-      queryClient.invalidateQueries({
-        queryKey: ["groupBy_strategy_direction"],
-      });
-      queryClient.invalidateQueries({ queryKey: ["groupBy_strategy_symbol"] });
-
-      // instant UI update
-      setTrades((prev) => prev.filter((t) => t._id !== tradeId));
-      setTotalTrades((prev) => prev - 1);
-
-      const isLastTradeOnPage = trades.length === 1;
-      const newPage =
-        isLastTradeOnPage && currentPage > 1 ? currentPage - 1 : currentPage;
-
-      setSearchParams({ page: String(newPage) });
-    } catch (error) {
-      console.error("Error deleting trade:", error);
-      setError(error.response?.data?.message || error.message);
-    }
+    deleteTradeMutation.mutate(tradeId);
   };
 
   const handleEditClick = (trade) => {
     setEditingTradeId(trade._id);
+
     setEditFormData({
       symbol: trade.symbol || "",
       direction: trade.direction || "",
-      openPrice: trade.openPrice || "",
-      closePrice: trade.closePrice || "",
-      volume: trade.volume || "",
-      profitLoss: trade.profitLoss || "",
+      openPrice: trade.openPrice ?? "",
+      closePrice: trade.closePrice ?? "",
+      volume: trade.volume ?? "",
+      profitLoss: trade.profitLoss ?? "",
       strategy: trade.strategy || "",
       notes: trade.notes || "",
     });
   };
 
-  const handleCancelEdit = () => {
-    setEditingTradeId(null);
+  const resetEditForm = () => {
     setEditFormData({
       symbol: "",
       direction: "",
@@ -198,6 +238,11 @@ export default function ShowAllTrades() {
     });
   };
 
+  const handleCancelEdit = () => {
+    setEditingTradeId(null);
+    resetEditForm();
+  };
+
   const handleEditChange = (e) => {
     const { name, value } = e.target;
 
@@ -207,32 +252,8 @@ export default function ShowAllTrades() {
     }));
   };
 
-  const handleUpdateTrade = async (tradeId) => {
-    try {
-      setError("");
-
-      const response = await authApi.put(
-        `/api/trades/update/${tradeId}`,
-        editFormData,
-      );
-
-      const data = response.data;
-
-      setTrades((prevTrades) =>
-        prevTrades.map((trade) => (trade._id === tradeId ? data.trade : trade)),
-      );
-      queryClient.invalidateQueries({ queryKey: ["total_win_and_loss"] });
-      queryClient.invalidateQueries({ queryKey: ["groupBy_strategy"] });
-      queryClient.invalidateQueries({
-        queryKey: ["groupBy_strategy_direction"],
-      });
-      queryClient.invalidateQueries({ queryKey: ["groupBy_strategy_symbol"] });
-
-      setEditingTradeId(null);
-    } catch (error) {
-      console.error("Error updating trade:", error);
-      setError(error.response?.data?.message || error.message);
-    }
+  const handleUpdateTrade = (tradeId) => {
+    updateTradeMutation.mutate(tradeId);
   };
 
   return (
@@ -243,6 +264,7 @@ export default function ShowAllTrades() {
         <select
           value={filters.symbol}
           onChange={(e) => handleFilterChange("symbol", e.target.value)}
+          disabled={loading}
         >
           <option value="">All Symbols</option>
           {filterOptions.symbols.map((symbol) => (
@@ -255,6 +277,7 @@ export default function ShowAllTrades() {
         <select
           value={filters.direction}
           onChange={(e) => handleFilterChange("direction", e.target.value)}
+          disabled={loading}
         >
           <option value="">All Directions</option>
           {filterOptions.directions.map((direction) => (
@@ -267,6 +290,7 @@ export default function ShowAllTrades() {
         <select
           value={filters.strategy}
           onChange={(e) => handleFilterChange("strategy", e.target.value)}
+          disabled={loading}
         >
           <option value="">All Strategies</option>
           {filterOptions.strategies.map((strategy) => (
@@ -276,7 +300,9 @@ export default function ShowAllTrades() {
           ))}
         </select>
 
-        <button onClick={handleResetFilters}>Reset</button>
+        <button onClick={handleResetFilters} disabled={loading}>
+          Reset
+        </button>
       </div>
 
       <p className="info-message">
@@ -284,7 +310,9 @@ export default function ShowAllTrades() {
       </p>
 
       {loading && <p className="info-message">Loading trades...</p>}
+
       {error && <p className="form-message error-message">{error}</p>}
+
       {!loading && trades.length === 0 && (
         <p className="info-message">No trades found</p>
       )}

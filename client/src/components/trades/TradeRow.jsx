@@ -26,12 +26,16 @@ export default function TradeRow({
           />
         </td>
         <td>
-          <input
-            type="text"
+          <select
             name="direction"
             value={editFormData.direction}
             onChange={onEditChange}
-          />
+            required
+          >
+            <option value="">Select Direction</option>
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+          </select>
         </td>
         <td>
           <input
