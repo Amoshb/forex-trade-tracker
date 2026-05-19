@@ -75,6 +75,7 @@ MongoDB Database
 ```bash
 git clone https://github.com/yourname/forex-trade-tracker.git
 
+# From the project root:
 # Install server dependencies
 cd server && npm install
 

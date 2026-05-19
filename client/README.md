@@ -26,6 +26,8 @@ REACT_APP_API_BASE_URL=http://localhost:5000
 
 ```bash
 npm start     # Development server on port 3000
+npm run build    # Production build
+npm test         # Run tests
 ```
 
 ## 🛠️ Tech Stack
